@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const router = express.Router();
-const { model } = require("../gemini");
+const { model } = require("./gemini");
 
 router.use(express.json());
 
