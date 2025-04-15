@@ -19,6 +19,9 @@ The project is built using the following technologies:
 
 The frontend is a Next.js application that provides the user interface.  The backend consists of Next.js API routes that handle GitHub webhook events and interact with the Google Gemini API for code analysis.  Upstash Redis is used as a message queue to handle pull request review jobs.
 
+# Example Response
+<img width="453" alt="Screenshot 2025-04-15 at 7 13 38 PM" src="https://github.com/user-attachments/assets/ea08c6b1-5465-4711-a73c-4cfcdccd1fca" />
+
 ## Getting Started
 
 To set up PullPanda for your repository, follow these steps:
@@ -44,3 +47,7 @@ To set up PullPanda for your repository, follow these steps:
     - Under "Which events would you like to trigger this webhook?", select "Let me select individual events".
     - Check the box for "Pull requests".
     - Click "Add webhook" to save the webhook configuration.
+  
+
+
+
