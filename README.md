@@ -22,32 +22,6 @@ The frontend is a Next.js application that provides the user interface.  The bac
 # Example Response
 <img width="453" alt="Screenshot 2025-04-15 at 7 13 38 PM" src="https://github.com/user-attachments/assets/ea08c6b1-5465-4711-a73c-4cfcdccd1fca" />
 
-## Getting Started
-
-To set up PullPanda for your repository, follow these steps:
-
-### Prerequisites
-
-- A GitHub repository
-- A Google Cloud project with the Gemini API enabled and an API key
-- An Upstash Redis account with the URL and token
-- Node.js and npm installed
-
-### Installation
-
-1.  **Set Repository to Public:** Go to your repository settings on GitHub and change the visibility to public.
-
-2.  **Add Webhook:**
-    - Go to your repository settings on GitHub and navigate to "Webhooks".
-    - Click "Add webhook".
-    - Set the "Payload URL" to `https://pull-panda.vercel.app/api/github`.
-    - Set the "Content type" to `application/json`.
-
-3.  **Select Pull Request Event:**
-    - Under "Which events would you like to trigger this webhook?", select "Let me select individual events".
-    - Check the box for "Pull requests".
-    - Click "Add webhook" to save the webhook configuration.
-  
 
 
 
