@@ -6,13 +6,15 @@
   "scripts": {
     "dev": "bun --watch src/index.ts",
     "start": "bun src/index.ts",
-    "typecheck": "tsc -p ."
+    "typecheck": "tsc -p .",
+    "review-pr": "bun scripts/review-pr.ts"
   },
   "dependencies": {
     "@pullpanda/core": "workspace:*",
     "@pullpanda/db": "workspace:*",
     "bullmq": "^5.81.5",
     "ioredis": "^5.11.1",
-    "zod": "^4.6.7"
+    "zod": "^4.6.7",
+    "@octokit/rest": "^22.0.1"
   }
 }

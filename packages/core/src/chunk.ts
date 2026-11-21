@@ -40,15 +40,26 @@ export function prepareFile(file: ChangedFile, fileTokens: number): PreparedFile
   return { path: file.path, status: file.status, parsed, rendered, tokens: estimateTokens(rendered), truncated };
 }
 
+const CODE = /\.(ts|tsx|js|jsx|mjs|cjs|py|go|rs|java|kt|rb|php|cs|swift|scala|c|cc|cpp|h|hpp|sql|sh)$/i;
+const DATA = /\.(json|ya?ml|toml|lock|csv|svg|css|scss|html|md|txt)$/i;
+
+/** Review order under a budget: source code first, then everything else, data and assets last. */
+export function fileRank(path: string): number {
+  if (CODE.test(path)) return 0;
+  if (DATA.test(path)) return 2;
+  return 1;
+}
+
 /**
- * Greedy bin-packing of files into model-sized batches. Larger diffs go first so a
- * big file is never starved by the total budget, and each batch stays under `batchTokens`.
+ * Bin-packs files into model-sized batches under a total budget. Source code goes first and, within a
+ * rank, smaller diffs first, so the budget covers as many real changes as possible. (Largest-first spent a
+ * 491-file PR's whole budget on six vendored files and skipped all of its application code.)
  */
 export function chunkFiles(
   files: PreparedFile[],
   opts: ChunkOptions = DEFAULT_CHUNK_OPTIONS,
 ): { batches: PreparedFile[][]; skipped: string[] } {
-  const sorted = [...files].sort((a, b) => b.tokens - a.tokens);
+  const sorted = [...files].sort((a, b) => fileRank(a.path) - fileRank(b.path) || a.tokens - b.tokens);
   const batches: { files: PreparedFile[]; tokens: number }[] = [];
   const skipped: string[] = [];
   let total = 0;

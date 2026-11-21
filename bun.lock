@@ -44,6 +44,7 @@
       "name": "@pullpanda/worker",
       "version": "0.1.0",
       "dependencies": {
+        "@octokit/rest": "^22.0.1",
         "@pullpanda/core": "workspace:*",
         "@pullpanda/db": "workspace:*",
         "bullmq": "^5.81.5",

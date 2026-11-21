@@ -31,6 +31,9 @@ export interface GitHubClient {
 
 const ThrottledOctokit = Octokit.plugin(retry, throttling);
 
+/** Octokit logs every non-2xx request; a missing .pullpanda.yml is an expected 404, so only errors are logged. */
+export const quietLog = { debug() {}, info() {}, warn() {}, error: console.error };
+
 export interface GitHubAppCredentials {
   appId: string;
   privateKey: string;
@@ -42,6 +45,7 @@ export function installationOctokit(creds: GitHubAppCredentials, installationId:
     authStrategy: createAppAuth,
     auth: { appId: creds.appId, privateKey: creds.privateKey, installationId },
     userAgent: "PullPanda",
+    log: quietLog,
     throttle: {
       onRateLimit: (_retryAfter, _options, _octokit, retryCount) => retryCount < 2,
       onSecondaryRateLimit: (_retryAfter, _options, _octokit, retryCount) => retryCount < 2,
@@ -54,6 +58,7 @@ export function appOctokit(creds: GitHubAppCredentials): Octokit {
     authStrategy: createAppAuth,
     auth: { appId: creds.appId, privateKey: creds.privateKey },
     userAgent: "PullPanda",
+    log: quietLog,
     throttle: { onRateLimit: () => false, onSecondaryRateLimit: () => false },
   });
 }

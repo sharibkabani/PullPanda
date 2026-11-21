@@ -36,6 +36,9 @@ export const DEFAULT_IGNORES = [
   "**/dist/**",
   "**/build/**",
   "**/vendor/**",
+  "**/third_party/**",
+  "**/public/assets/**",
+  "**/migrations/meta/**",
   "**/node_modules/**",
   "**/*.{png,jpg,jpeg,gif,webp,ico,svg,pdf,woff,woff2,ttf,mp4,zip}",
 ];

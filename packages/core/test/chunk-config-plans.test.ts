@@ -1,17 +1,22 @@
 import { describe, expect, test } from "bun:test";
-import { checkEntitlement, chunkFiles, isIgnored, parseRepoConfig, prepareFile, type PreparedFile } from "../src";
+import { DEFAULT_IGNORES, checkEntitlement, chunkFiles, fileRank, isIgnored, parseRepoConfig, prepareFile, type PreparedFile } from "../src";
 
 const fake = (path: string, tokens: number) => ({ path, tokens }) as PreparedFile;
 
 describe("chunkFiles", () => {
-  test("packs files under the batch budget and skips past the total budget", () => {
+  test("code first, then smaller diffs, within the batch and total budgets", () => {
     const { batches, skipped } = chunkFiles(
-      [fake("a", 50), fake("b", 40), fake("c", 30), fake("d", 30), fake("e", 100)],
+      [fake("a.ts", 50), fake("b.ts", 40), fake("c.json", 30), fake("d.ts", 30), fake("e.ts", 100)],
       { batchTokens: 80, fileTokens: 100, totalTokens: 160 },
     );
-    // Largest first: e (100) and a (50) fit the total budget; the rest are skipped.
-    expect(batches.map((b) => b.map((f) => f.path))).toEqual([["e"], ["a"]]);
-    expect(skipped).toEqual(["b", "c", "d"]);
+    // d.ts (30) + b.ts (40) fill a batch, a.ts (50) opens the next; e.ts would pass the total, c.json is data.
+    expect(batches.map((b) => b.map((f) => f.path))).toEqual([["d.ts", "b.ts"], ["a.ts", "c.json"]]);
+    expect(skipped).toEqual(["e.ts"]);
+  });
+
+  test("ranks source code ahead of config and assets", () => {
+    expect(fileRank("src/review.ts")).toBeLessThan(fileRank("Dockerfile"));
+    expect(fileRank("Dockerfile")).toBeLessThan(fileRank("public/data.json"));
   });
 
   test("truncates a single huge file", () => {
@@ -40,6 +45,7 @@ describe("config", () => {
     expect(isIgnored("apps/web/package-lock.json", ["**/package-lock.json"])).toBe(true);
     expect(isIgnored("docs/guide.md", ["docs/**"])).toBe(true);
     expect(isIgnored("src/index.ts", ["docs/**"])).toBe(false);
+    expect(isIgnored("apps/web/public/assets/system.js", DEFAULT_IGNORES)).toBe(true);
   });
 });
 
