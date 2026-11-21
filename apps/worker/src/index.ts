@@ -1,4 +1,4 @@
-import { logger, OctokitGitHubClient, OpenAIReviewModel, REVIEW_QUEUE, type ReviewJobData } from "@pullpanda/core";
+import { createReviewModel, logger, OctokitGitHubClient, REVIEW_QUEUE, type ReviewJobData } from "@pullpanda/core";
 import { createDb } from "@pullpanda/db";
 import { UnrecoverableError, Worker } from "bullmq";
 import IORedis from "ioredis";
@@ -9,8 +9,12 @@ const env = z
   .object({
     DATABASE_URL: z.string().default("postgres://pullpanda:pullpanda@localhost:5432/pullpanda"),
     REDIS_URL: z.string().default("redis://localhost:6379"),
-    OPENAI_API_KEY: z.string().min(1),
-    OPENAI_MODEL: z.string().default("gpt-5.4-mini"),
+    LLM_PROVIDER: z.enum(["anthropic", "openai"]).default("anthropic"),
+    /** Optional: without it the Anthropic SDK also reads ANTHROPIC_AUTH_TOKEN or an `ant auth login` profile. */
+    ANTHROPIC_API_KEY: z.string().min(1).optional(),
+    ANTHROPIC_MODEL: z.string().optional(),
+    OPENAI_API_KEY: z.string().min(1).optional(),
+    OPENAI_MODEL: z.string().optional(),
     GITHUB_APP_ID: z.string().min(1),
     GITHUB_APP_PRIVATE_KEY: z.string().min(1),
     WORKER_CONCURRENCY: z.coerce.number().int().min(1).default(4),
@@ -27,7 +31,7 @@ const db = createDb(env.DATABASE_URL);
 const connection = new IORedis(env.REDIS_URL, { maxRetriesPerRequest: null });
 const deps = {
   db,
-  model: new OpenAIReviewModel({ apiKey: env.OPENAI_API_KEY, model: env.OPENAI_MODEL }),
+  model: createReviewModel(env),
   githubFor: (installationId: number) =>
     OctokitGitHubClient.forInstallation({ appId: env.GITHUB_APP_ID, privateKey }, installationId),
 };

@@ -4,15 +4,19 @@
  * posted as that user.
  *
  *   GITHUB_TOKEN=$(gh auth token) bun apps/worker/scripts/review-pr.ts owner/repo#1 --plan     # no model call
- *   GITHUB_TOKEN=$(gh auth token) OPENAI_API_KEY=... bun apps/worker/scripts/review-pr.ts owner/repo#1 --dry-run
- *   GITHUB_TOKEN=$(gh auth token) OPENAI_API_KEY=... bun apps/worker/scripts/review-pr.ts owner/repo#1        # posts
+ *   GITHUB_TOKEN=$(gh auth token) bun --env-file=.env apps/worker/scripts/review-pr.ts owner/repo#1 --dry-run
+ *   GITHUB_TOKEN=$(gh auth token) bun --env-file=.env apps/worker/scripts/review-pr.ts owner/repo#1        # posts
+ *
+ * The model comes from LLM_PROVIDER (anthropic by default: ANTHROPIC_API_KEY, ANTHROPIC_MODEL).
  */
 import {
   CONFIG_PATH,
   DEFAULT_CHUNK_OPTIONS,
   DEFAULT_IGNORES,
   OctokitGitHubClient,
-  OpenAIReviewModel,
+  createReviewModel,
+  estimateCostUsd,
+  modelPrices,
   quietLog,
   PLANS,
   chunkFiles,
@@ -59,8 +63,7 @@ if (plan) {
   process.exit(0);
 }
 
-const apiKey = process.env.OPENAI_API_KEY;
-if (!apiKey) throw new Error("set OPENAI_API_KEY to run the model");
+const model = createReviewModel(process.env as Parameters<typeof createReviewModel>[0]);
 const github: GitHubClient = dryRun
   ? {
       getPullRequest: real.getPullRequest.bind(real),
@@ -77,6 +80,8 @@ const github: GitHubClient = dryRun
 const started = performance.now();
 const outcome = await reviewPullRequest(
   { installationId: 0, owner, repo, repositoryId: repoInfo.id, prNumber, headSha: pr.headSha },
-  { github, model: new OpenAIReviewModel({ apiKey, model: process.env.OPENAI_MODEL }), chunk },
+  { github, model, chunk },
 );
-console.log(JSON.stringify({ ...outcome, findings: undefined, seconds: Math.round((performance.now() - started) / 100) / 10 }, null, 2));
+const seconds = Math.round((performance.now() - started) / 100) / 10;
+const costUsd = outcome.status === "completed" ? Math.round(estimateCostUsd(outcome.usage, modelPrices(outcome.model)) * 1000) / 1000 : 0;
+console.log(JSON.stringify({ ...outcome, findings: undefined, seconds, costUsd }, null, 2));

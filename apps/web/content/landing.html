@@ -73,7 +73,7 @@
   Use zod for request input.</code></pre>
           </div>
           <div class="ly-piece pc-chip" style="left: 68%; top: 12%; width: 28%">
-            <img width="24" height="24" data-icon="openai" src="assets/icons/openai.svg" alt="" class="ic-ink"><span>Model reply checked</span><b>2 lines dropped</b>
+            <img width="24" height="24" data-icon="claude" src="assets/icons/claude.svg" alt=""><span>Claude reply checked</span><b>2 lines dropped</b>
           </div>
         </div>
         <div class="ly-collage__set" aria-hidden="true">
@@ -276,7 +276,7 @@
           <h3>Splits large pull requests</h3>
           <p>Diffs are packed into batches, reviewed side by side and merged into one review.</p>
           <div class="panel panel--flush" data-fx="painterly-landscape" data-fx-seed="47" data-fx-palette='{"bg":"#cdd6c6","surface":"#dce3d6","ink":"#262d24","accent":"#6c8e63"}' data-fx-params='{"speed":0,"drift":0}'>
-            <div class="dg" data-dg-still data-diagram='{"layout":"lanes","alt":"Pull request 212 is split into three batches of diffs, each reviewed by the model, then merged into one GitHub review.","curve":"curve","input":{"label":"#212","icon":"github","cap":false},"core":{"label":"Batcher","icon":"ui:box"},"lanes":[{"label":"Batch 1","icon":"openai","done":true,"cap":false},{"label":"Batch 2","icon":"openai","done":true,"cap":false},{"label":"Batch 3","icon":"openai","done":true,"cap":false}]}'></div>
+            <div class="dg" data-dg-still data-diagram='{"layout":"lanes","alt":"Pull request 212 is split into three batches of diffs, each reviewed by Claude, then merged into one GitHub review.","curve":"curve","input":{"label":"#212","icon":"github","cap":false},"core":{"label":"Batcher","icon":"ui:box"},"lanes":[{"label":"Batch 1","icon":"claude","done":true,"cap":false},{"label":"Batch 2","icon":"claude","done":true,"cap":false},{"label":"Batch 3","icon":"claude","done":true,"cap":false}]}'></div>
           </div>
         </article>
         <article class="card card--row span-6 m-nolift">
@@ -414,9 +414,9 @@
           <h2 id="faq-h">Questions</h2>
           <p>What teams ask before they install.</p>
           <a class="link" href="mailto:hello@pullpanda.example">Email us</a>
-          <div class="faq__tools" aria-label="Runs on GitHub and OpenAI">
+          <div class="faq__tools" aria-label="Runs on GitHub and Claude">
             <span class="ic-tile ic-tile--56"><img loading="lazy" width="24" height="24" class="ic" data-icon="github" src="assets/icons/github.svg" alt="GitHub"></span>
-            <span class="ic-tile ic-tile--56"><img loading="lazy" width="24" height="24" class="ic" data-icon="openai" src="assets/icons/openai.svg" alt="OpenAI"></span>
+            <span class="ic-tile ic-tile--56"><img loading="lazy" width="24" height="24" class="ic" data-icon="claude" src="assets/icons/claude.svg" alt="Claude"></span>
           </div>
         </div>
         <div class="faq span-6 start-7">
@@ -424,7 +424,7 @@
           <div class="faq__item"><h3>Does PullPanda read the whole repository?</h3><p>No. It reads the changed lines and the lines around them, so it can miss a problem that only shows across files.</p></div>
           <div class="faq__item"><h3>What starts a review?</h3><p>Opening, reopening or marking a pull request ready, and every push to it.</p></div>
           <div class="faq__item"><h3>Can I turn reviews off for one repository?</h3><p>Yes. Switch it off in the dashboard, or commit <code>enabled: false</code> in .pullpanda.yml.</p></div>
-          <div class="faq__item"><h3>Which model writes the reviews?</h3><p>An OpenAI model chosen by whoever runs PullPanda. Its answer is checked against the diff, and comments on lines outside it are dropped.</p></div>
+          <div class="faq__item"><h3>Which model writes the reviews?</h3><p>Claude Opus 5.5 by default. Its answer is checked against the diff, and comments on lines outside it are dropped.</p></div>
           <div class="faq__item"><h3>How do I cancel a Pro subscription?</h3><p>Cancel in the billing portal. Pro stays on for that repository until the paid month ends.</p></div>
         </div>
       </div>

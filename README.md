@@ -1,7 +1,7 @@
 # PullPanda
 
 AI code review as a GitHub App. When a pull request is opened or pushed to, PullPanda reads the diff, asks an
-OpenAI model for a structured review, validates every finding against the diff, and posts **one GitHub review
+Claude (Opus 5.5 by default; OpenAI is a configurable alternative) for a structured review, validates every finding against the diff, and posts **one GitHub review
 with inline comments and one-click suggested fixes**. Pro is sold per repository through Polar.
 
 ```mermaid
@@ -13,7 +13,7 @@ flowchart LR
   R -- "jobId = repo·pr·sha" --> Q[[BullMQ on Redis]]
   Q --> W
   subgraph W["apps/worker · Bun"]
-    F[fetch PR + .pullpanda.yml] --> P[parse hunks<br/>filter + batch by token budget] --> L[OpenAI structured output<br/>zod schema] --> X[validate lines<br/>dedupe · cap · rank]
+    F[fetch PR + .pullpanda.yml] --> P[parse hunks<br/>filter + batch by token budget] --> L[Claude structured output<br/>zod schema] --> X[validate lines<br/>dedupe · cap · rank]
   end
   X -- "pulls.createReview" --> GH
   Polar -- "subscription.* webhook" --> API
@@ -65,7 +65,7 @@ bun bench/report.ts                                            # refresh the sit
 | `apps/api` | Elysia HTTP API: GitHub + Polar webhooks, GitHub OAuth login, dashboard + billing endpoints, OpenAPI at `/docs` |
 | `apps/worker` | BullMQ worker that runs reviews, with retries, a dead-letter set and graceful drain |
 | `apps/web` | Next.js static export: the marketing page (built with the taste design kit) and the React dashboard |
-| `packages/core` | Pure review pipeline: diff parser, batching, OpenAI model, GitHub client, plans, HMAC |
+| `packages/core` | Pure review pipeline: diff parser, batching, Claude and OpenAI review models, GitHub client, plans, HMAC |
 | `packages/db` | Drizzle schema, migrations and client for Postgres |
 | `bench` | Load generators for webhook intake and worker drain, and the report that feeds the site's charts |
 
@@ -81,7 +81,8 @@ bun bench/report.ts                                            # refresh the sit
   final status is written back to Postgres for the dashboard.
 - **Stale work is skipped.** The worker re-reads the PR head. If a newer push superseded the commit, it skips
   instead of commenting on outdated code.
-- **The model is never trusted blindly.** Reviews use OpenAI structured outputs (a zod schema). Each finding's
+- **The model is never trusted blindly.** Reviews use Claude structured outputs (a zod schema), adaptive thinking at
+  high effort, and the server-side refusal fallback; a refusal that survives it fails the job without retries. Each finding's
   line must fall inside a diff hunk on the right side, and multi-line ranges must stay within one hunk.
   Hallucinated lines are dropped, which also prevents GitHub `422`s. Findings are deduped, filtered by the
   repo's `minSeverity`, ranked and capped.
@@ -104,8 +105,14 @@ docker compose up -d          # Postgres 17 + Redis 7
 cp .env.example .env          # fill in what you have; everything optional boots disabled
 bun run db:migrate
 bun run dev:api               # http://localhost:3001  (OpenAPI docs at /docs)
-bun run dev:worker            # needs OPENAI_API_KEY and the GitHub App credentials
+bun run dev:worker            # needs ANTHROPIC_API_KEY and the GitHub App credentials
 bun run dev:web               # http://localhost:3000
+```
+
+To review one real PR without the GitHub App (posts as you; `--plan` and `--dry-run` post nothing):
+
+```bash
+GITHUB_TOKEN=$(gh auth token) bun --env-file=.env apps/worker/scripts/review-pr.ts owner/repo#1 --dry-run
 ```
 
 To try the dashboard without creating a GitHub App, seed demo data and set the printed cookie on `localhost`:

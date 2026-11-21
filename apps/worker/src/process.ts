@@ -1,6 +1,7 @@
 import {
   DEFAULT_CHUNK_OPTIONS,
   estimateCostUsd,
+  modelPrices,
   logger,
   PLANS,
   reviewPullRequest,
@@ -20,6 +21,7 @@ export interface WorkerDeps {
 
 /** Errors that will fail the same way on retry — don't burn attempts on them. */
 export function isPermanent(err: unknown): boolean {
+  if ((err as { permanent?: boolean }).permanent) return true; // e.g. the model refused the batch
   const status = (err as { status?: number }).status;
   return status === 401 || status === 403 || status === 404 || status === 422;
 }
@@ -74,7 +76,7 @@ export async function processReviewJob(job: ReviewJobData, attempt: number, deps
       model: outcome.model,
       inputTokens: outcome.usage.inputTokens,
       outputTokens: outcome.usage.outputTokens,
-      costUsd: estimateCostUsd(outcome.usage),
+      costUsd: estimateCostUsd(outcome.usage, modelPrices(outcome.model)),
       durationMs,
       error: null,
       completedAt: new Date(),

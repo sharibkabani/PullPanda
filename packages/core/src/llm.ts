@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 import { z } from "zod";
+import { AnthropicReviewModel } from "./anthropic";
 import { SEVERITIES } from "./config";
 import type { PreparedFile } from "./chunk";
 import type { Finding, PullRequestInfo, TokenUsage } from "./types";
@@ -105,10 +106,34 @@ export class OpenAIReviewModel implements ReviewModel {
   }
 }
 
-/** USD per million tokens, configured per deployment since prices change. */
-export function estimateCostUsd(usage: TokenUsage, prices = {
-  input: Number(process.env.OPENAI_INPUT_USD_PER_MTOK ?? 0),
-  output: Number(process.env.OPENAI_OUTPUT_USD_PER_MTOK ?? 0),
-}): number {
+/** List prices in USD per million tokens for the default models; override with LLM_*_USD_PER_MTOK. */
+const KNOWN_PRICES: Record<string, { input: number; output: number }> = {
+  "claude-opus-5-5": { input: 4, output: 20 },
+  "claude-sonnet-5-5": { input: 2, output: 10 },
+  "claude-haiku-5-5": { input: 0.1, output: 0.5 },
+};
+
+export function modelPrices(model: string) {
+  const env = { input: process.env.LLM_INPUT_USD_PER_MTOK, output: process.env.LLM_OUTPUT_USD_PER_MTOK };
+  if (env.input && env.output) return { input: Number(env.input), output: Number(env.output) };
+  return KNOWN_PRICES[model] ?? { input: 0, output: 0 };
+}
+
+export function estimateCostUsd(usage: TokenUsage, prices = { input: 0, output: 0 }): number {
   return (usage.inputTokens * prices.input + usage.outputTokens * prices.output) / 1_000_000;
+}
+
+/** Picks the review model from configuration: Anthropic by default, OpenAI when asked for. */
+export function createReviewModel(env: {
+  LLM_PROVIDER?: string;
+  ANTHROPIC_API_KEY?: string;
+  ANTHROPIC_MODEL?: string;
+  OPENAI_API_KEY?: string;
+  OPENAI_MODEL?: string;
+}): ReviewModel {
+  if ((env.LLM_PROVIDER ?? "anthropic") === "openai") {
+    if (!env.OPENAI_API_KEY) throw new Error("LLM_PROVIDER=openai needs OPENAI_API_KEY");
+    return new OpenAIReviewModel({ apiKey: env.OPENAI_API_KEY, model: env.OPENAI_MODEL });
+  }
+  return new AnthropicReviewModel({ apiKey: env.ANTHROPIC_API_KEY, model: env.ANTHROPIC_MODEL });
 }
