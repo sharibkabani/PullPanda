@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { signGithubPayload, type ReviewJobData } from "@pullpanda/core";
-import { createDb, orm, repositories, reviews } from "@pullpanda/db";
+import { createDb, orm, repositories, reviews, users } from "@pullpanda/db";
 import { createApp } from "../src/app";
 import type { ApiDeps } from "../src/deps";
 import { loadEnv } from "../src/env";
@@ -18,8 +18,10 @@ function makeApp(over: Partial<ApiDeps> = {}) {
   return createApp({
     env,
     db,
-    enqueueReview: async (job) => void queued.push(job),
+    // Like BullMQ with a deterministic job id: adding the same review twice is a no-op.
+    enqueueReview: async (job) => void (queued.some((q) => q.reviewId === job.reviewId) || queued.push(job)),
     claimDelivery: async (id) => (deliveries.has(id) ? false : (deliveries.add(id), true)),
+    releaseDelivery: async (id) => void deliveries.delete(id),
     oauth: {
       authorizeUrl: (state) => `https://github.test/authorize?state=${state}`,
       exchangeCode: async () => "user-token",
@@ -100,13 +102,36 @@ describe("GitHub webhook", () => {
     await app.handle(ghRequest("pull_request", prPayload(), { delivery: "d1" }));
     const again = await app.handle(ghRequest("pull_request", prPayload(), { delivery: "d1" }));
     expect(await again.json() as any).toEqual({ duplicate: true });
-    // a redelivery with a new id but the same commit is also a no-op
+    // a redelivery with a new id but the same commit re-enqueues the still-queued review, which the queue dedupes
     const sameSha = await app.handle(ghRequest("pull_request", prPayload({ action: "reopened" })));
-    expect(await sameSha.json() as any).toEqual({ duplicate: true });
+    expect((await sameSha.json() as any).requeued).toBe(true);
     expect(queued).toHaveLength(1);
     // a new push is a new review
     await app.handle(ghRequest("pull_request", prPayload({ action: "synchronize", sha: "sha2" })));
     expect(queued).toHaveLength(2);
+  });
+
+  test("a failed enqueue returns 5xx and GitHub's redelivery of the same delivery id recovers it", async () => {
+    let redisDown = true;
+    const app = makeApp({
+      enqueueReview: async (job) => {
+        if (redisDown) throw new Error("ECONNREFUSED redis");
+        queued.push(job);
+      },
+    });
+    const first = await app.handle(ghRequest("pull_request", prPayload(), { delivery: "d-fail" }));
+    expect(first.status).toBe(500);
+    redisDown = false;
+    const retry = await app.handle(ghRequest("pull_request", prPayload(), { delivery: "d-fail" }));
+    expect(retry.status).toBe(202);
+    expect(queued).toHaveLength(1);
+    const rows = await db.select().from(reviews);
+    expect(rows).toHaveLength(1);
+  });
+
+  test("malformed but signed payloads are a 400, not a 500", async () => {
+    expect((await makeApp().handle(ghRequest("pull_request", null))).status).toBe(400);
+    expect((await makeApp().handle(ghRequest("pull_request", { action: "opened" }))).status).toBe(400);
   });
 
   test("ignores irrelevant PR actions", async () => {
@@ -222,14 +247,23 @@ describe("Polar webhook", () => {
       headers: { "content-type": "application/json", "webhook-id": id, "webhook-signature": sig, "webhook-timestamp": "0" },
       body: JSON.stringify(payload),
     });
-  const sub = (type: string, status: string) => ({
+  let buyer = "";
+  const sub = (type: string, status: string, modifiedAt = "2026-11-01T00:00:00Z", userId: string = buyer) => ({
     type,
-    data: { id: "sub_1", status, customer_id: "cus_1", current_period_end: "2099-01-01T00:00:00Z", ends_at: null, metadata: { repositoryId: 101 } },
+    data: {
+      id: "sub_1", status, customer_id: "cus_1", current_period_end: "2099-01-01T00:00:00Z", ends_at: null,
+      created_at: "2026-11-01T00:00:00Z", modified_at: modifiedAt, metadata: { repositoryId: 101, userId },
+    },
   });
+  const loginBuyer = async (app: ReturnType<typeof makeApp>) => {
+    await login(app);
+    buyer = (await db.select().from(users))[0]!.id;
+  };
+  const planOf101 = async () => (await db.select().from(repositories).where(orm.eq(repositories.id, 101)))[0]!.plan;
 
   test("an active subscription upgrades the repo; private PRs are then queued as pro", async () => {
     const app = makeApp();
-    await login(app);
+    await loginBuyer(app);
     expect((await app.handle(polarRequest(sub("subscription.active", "active"), "nope"))).status).toBe(403);
     expect((await app.handle(polarRequest(sub("subscription.active", "active")))).status).toBe(200);
 
@@ -237,9 +271,25 @@ describe("Polar webhook", () => {
     expect(res.status).toBe(202);
     expect(queued[0]!.plan).toBe("pro");
 
-    await app.handle(polarRequest(sub("subscription.revoked", "canceled")));
-    const [repo] = await db.select().from(repositories).where(orm.eq(repositories.id, 101));
-    expect(repo!.plan).toBe("free");
+    await app.handle(polarRequest(sub("subscription.revoked", "canceled", "2026-11-02T00:00:00Z")));
+    expect(await planOf101()).toBe("free");
+  });
+
+  test("an older event arriving late doesn't undo a newer one", async () => {
+    const app = makeApp();
+    await loginBuyer(app);
+    await app.handle(polarRequest(sub("subscription.revoked", "canceled", "2026-11-05T00:00:00Z")));
+    const late = await app.handle(polarRequest(sub("subscription.active", "active", "2026-11-01T00:00:00Z")));
+    expect((await late.json() as any).stale).toBe(true);
+    expect(await planOf101()).toBe("free");
+  });
+
+  test("a subscription naming a repository its buyer can't manage is ignored", async () => {
+    const app = makeApp();
+    await loginBuyer(app);
+    const res = await app.handle(polarRequest(sub("subscription.active", "active", undefined, "00000000-0000-0000-0000-000000000000")));
+    expect(await res.json() as any).toEqual({ handled: false });
+    expect(await planOf101()).toBe("free");
   });
 
   test("duplicate webhook ids are applied once", async () => {

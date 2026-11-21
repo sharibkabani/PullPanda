@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { reviewPullRequest, renderBatchPrompt } from "../src";
+import { renderBatchPrompt, renderComment, reviewPullRequest } from "../src";
 import { FakeGitHub, FakeModel, PATCH } from "./fakes";
 
 const ref = { installationId: 1, owner: "acme", repo: "api", repositoryId: 42, prNumber: 7, headSha: "abc" };
@@ -67,5 +67,46 @@ describe("reviewPullRequest", () => {
     const model = new FakeModel(() => []);
     await reviewPullRequest(ref, { github: gh, model });
     expect(renderBatchPrompt(model.calls[0]!)).toContain("Always use zod");
+  });
+});
+
+describe("idempotency and partial failures", () => {
+  test("a retry finds the review it already posted and does not call the model again", async () => {
+    const gh = new FakeGitHub(pr, files);
+    const model = new FakeModel(() => []);
+    const first = await reviewPullRequest(ref, { github: gh, model });
+    const second = await reviewPullRequest(ref, { github: gh, model });
+    expect(first.status).toBe("completed");
+    expect(second).toEqual({ status: "already-posted", githubReviewId: 1001 });
+    expect(gh.reviews).toHaveLength(1);
+    expect(model.calls).toHaveLength(1);
+    expect(gh.reviews[0]!.body).toContain("<!-- pullpanda:commit=abc -->");
+  });
+
+  test("one failed batch still posts the others and lists the files it missed", async () => {
+    const many = [
+      ...files,
+      { path: "src/orders.ts", status: "modified" as const, additions: 2, deletions: 1, patch: PATCH },
+    ];
+    const gh = new FakeGitHub(pr, many);
+    const model = new FakeModel((input) => {
+      if (input.files.some((f) => f.path === "src/orders.ts")) throw new Error("model timeout");
+      return [];
+    });
+    const out = await reviewPullRequest(ref, { github: gh, model, chunk: { batchTokens: 60, fileTokens: 60, totalTokens: 1000 } });
+    expect(out.status).toBe("completed");
+    if (out.status !== "completed") return;
+    expect(out.failedFiles).toEqual(["src/orders.ts"]);
+    expect(gh.reviews[0]!.body).toContain("not reviewed (the model call failed)");
+  });
+
+  test("when every batch fails the job fails, so the queue retries it", async () => {
+    const model = new FakeModel(() => { throw new Error("overloaded"); });
+    await expect(reviewPullRequest(ref, { github: new FakeGitHub(pr, files), model })).rejects.toThrow("overloaded");
+  });
+
+  test("a suggestion containing backticks keeps its fence", () => {
+    const body = renderComment({ path: "a.md", line: 1, severity: "nit", category: "style", title: "Fence", body: "x", suggestion: "```ts\ncode\n```" });
+    expect(body).toContain("````suggestion\n```ts\ncode\n```\n````");
   });
 });

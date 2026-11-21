@@ -69,6 +69,7 @@ const github: GitHubClient = dryRun
       getPullRequest: real.getPullRequest.bind(real),
       listPullRequestFiles: real.listPullRequestFiles.bind(real),
       getFileText: real.getFileText.bind(real),
+      findReview: real.findReview.bind(real),
       async createReview(input) {
         console.log(`\n--- review body ---\n${input.body}\n`);
         for (const c of input.comments) console.log(`--- ${c.path}:${c.start_line ? `${c.start_line}-` : ""}${c.line}\n${c.body}\n`);

@@ -63,6 +63,7 @@ const app = createApp({
   db,
   enqueueReview: async (job) => void (await queue.add("review", job, { ...REVIEW_JOB_OPTIONS, attempts: 1, jobId: reviewJobId(job) })),
   claimDelivery: async () => true,
+  releaseDelivery: async () => {},
   oauth: null,
   billing: null,
   health: async () => ({}),
@@ -139,4 +140,32 @@ test("re-running a completed job never double-posts", async () => {
   );
   expect(out.status).toBe("duplicate");
   expect(github.reviews.length).toBe(before);
+});
+
+test("a crash between posting and recording is healed on retry, without a second post", async () => {
+  const [done] = await db.select().from(reviews).where(orm.eq(reviews.status, "completed"));
+  // Simulate the lost write: GitHub has the review, Postgres doesn't know.
+  await db.update(reviews).set({ status: "running", githubReviewId: null }).where(orm.eq(reviews.id, done!.id));
+  const before = github.reviews.length;
+  const calls = model.calls.length;
+  github.pr = { ...pr, headSha: "e2e-sha" };
+  const out = await processReviewJob(
+    { installationId: 77, owner: "acme", repo: "api", repositoryId: 700, prNumber: 12, headSha: "e2e-sha", reviewId: done!.id, plan: "free" },
+    2,
+    { db, model, githubFor: () => github },
+  );
+  expect(out.status).toBe("already-posted");
+  expect(github.reviews.length).toBe(before);
+  expect(model.calls.length).toBe(calls);
+  const [row] = await db.select().from(reviews).where(orm.eq(reviews.id, done!.id));
+  expect(row!.status).toBe("completed");
+  expect(row!.githubReviewId).not.toBeNull();
+});
+
+test("GitHub 403s: rate limits retry, permission errors don't", () => {
+  const err = (headers: Record<string, string>, message = "Forbidden") => Object.assign(new Error(message), { status: 403, response: { headers } });
+  expect(isPermanent(err({}))).toBe(true);
+  expect(isPermanent(err({ "x-ratelimit-remaining": "0" }))).toBe(false);
+  expect(isPermanent(err({ "retry-after": "60" }))).toBe(false);
+  expect(isPermanent(err({}, "You have exceeded a secondary rate limit"))).toBe(false);
 });

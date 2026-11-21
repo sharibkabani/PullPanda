@@ -17,6 +17,8 @@ export interface ApiDeps {
   enqueueReview(job: ReviewJobData): Promise<void>;
   /** Short-lived dedupe of GitHub delivery ids. Returns true the first time an id is seen. */
   claimDelivery(id: string): Promise<boolean>;
+  /** Forgets a claimed delivery id after a failure, so GitHub's redelivery is processed. */
+  releaseDelivery(id: string): Promise<void>;
   oauth: GitHubOAuth | null;
   billing: Billing | null;
   health(): Promise<Record<string, boolean>>;

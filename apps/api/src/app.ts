@@ -63,9 +63,22 @@ export function createApp(deps: ApiDeps) {
         if (delivery && !(await deps.claimDelivery(delivery))) return { duplicate: true };
 
         const event = request.headers.get("x-github-event") ?? "unknown";
-        const result = await handleGitHubEvent(deps, event, JSON.parse(raw));
-        set.status = result.status;
-        return result.body;
+        let payload: unknown;
+        try {
+          payload = JSON.parse(raw);
+        } catch {
+          set.status = 400;
+          return { error: "body is not JSON" };
+        }
+        try {
+          const result = await handleGitHubEvent(deps, event, payload);
+          set.status = result.status;
+          return result.body;
+        } catch (err) {
+          // The 5xx makes GitHub redeliver; without releasing the id, that redelivery would be dropped as a duplicate.
+          if (delivery) await deps.releaseDelivery(delivery).catch(() => {});
+          throw err;
+        }
       },
       { parse: "none", detail: { summary: "GitHub App webhook receiver (HMAC-verified)" } },
     )

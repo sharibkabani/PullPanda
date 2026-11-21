@@ -34,8 +34,9 @@ export function createGitHubOAuth(clientId: string, clientSecret: string): GitHu
         headers: { Accept: "application/json", "Content-Type": "application/json" },
         body: JSON.stringify({ client_id: clientId, client_secret: clientSecret, code, redirect_uri: redirectUri }),
       });
-      const data = (await res.json()) as { access_token?: string; error_description?: string };
-      if (!data.access_token) throw new Error(data.error_description ?? "OAuth exchange failed");
+      if (!res.ok) throw new Error(`GitHub OAuth exchange failed: HTTP ${res.status}`);
+      const data = (await res.json().catch(() => ({}))) as { access_token?: string; error?: string; error_description?: string };
+      if (!data.access_token) throw new Error(`GitHub OAuth exchange failed: ${data.error_description ?? data.error ?? "no access token"}`);
       return data.access_token;
     },
     getUser: (token) => gh(token, "/user"),

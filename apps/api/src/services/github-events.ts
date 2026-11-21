@@ -31,6 +31,8 @@ interface PullRequestPayload {
 export type EventResult = { status: number; body: Record<string, unknown> };
 
 export async function handleGitHubEvent(deps: ApiDeps, event: string, payload: unknown): Promise<EventResult> {
+  // Signed by GitHub, but still checked: a malformed body must be a 400, not a 500 that GitHub keeps retrying.
+  if (typeof payload !== "object" || payload === null) return { status: 400, body: { error: "payload must be an object" } };
   const log = logger.child({ event, action: (payload as { action?: string }).action });
 
   switch (event) {
@@ -39,6 +41,7 @@ export async function handleGitHubEvent(deps: ApiDeps, event: string, payload: u
 
     case "installation": {
       const p = payload as InstallationPayload;
+      if (!p.installation?.account) return { status: 400, body: { error: "missing installation" } };
       if (p.action === "deleted") {
         await deleteInstallation(deps.db, p.installation.id);
       } else if (p.action === "suspend" || p.action === "unsuspend") {
@@ -53,6 +56,7 @@ export async function handleGitHubEvent(deps: ApiDeps, event: string, payload: u
 
     case "installation_repositories": {
       const p = payload as InstallationPayload;
+      if (!p.installation?.account) return { status: 400, body: { error: "missing installation" } };
       await upsertInstallation(deps.db, p.installation);
       await upsertRepositories(deps.db, p.installation.id, p.repositories_added ?? []);
       await removeRepositories(deps.db, (p.repositories_removed ?? []).map((r) => r.id));
@@ -62,6 +66,7 @@ export async function handleGitHubEvent(deps: ApiDeps, event: string, payload: u
     case "pull_request": {
       const p = payload as PullRequestPayload;
       if (!REVIEW_ACTIONS.has(p.action)) return { status: 200, body: { ignored: `action ${p.action}` } };
+      if (!p.repository?.owner || !p.pull_request?.head?.sha) return { status: 400, body: { error: "missing repository or pull_request" } };
       if (!p.installation) return { status: 400, body: { error: "missing installation" } };
 
       const installationId = p.installation.id;
@@ -85,8 +90,8 @@ export async function handleGitHubEvent(deps: ApiDeps, event: string, payload: u
       }
       const job: ReviewJobData = { ...ref, reviewId: decision.reviewId, plan: decision.plan };
       await deps.enqueueReview(job);
-      log.info({ ...ref, reviewId: decision.reviewId }, "review queued");
-      return { status: 202, body: { queued: true, reviewId: decision.reviewId } };
+      log.info({ ...ref, reviewId: decision.reviewId, requeue: decision.requeue ?? false }, "review queued");
+      return { status: 202, body: { queued: true, reviewId: decision.reviewId, ...(decision.requeue ? { requeued: true } : {}) } };
     }
 
     default:

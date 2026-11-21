@@ -58,9 +58,16 @@ const worker = new Worker<ReviewJobData>(
 
 worker.on("failed", async (job, err) => {
   if (!job) return;
-  const finalAttempt = job.attemptsMade >= (job.opts.attempts ?? 1) || err instanceof UnrecoverableError;
+  // BullMQ counts the attempt before emitting "failed": attemptsMade equals attempts on the last one.
+  const finalAttempt = err instanceof UnrecoverableError || job.attemptsMade >= (job.opts.attempts ?? 1);
   logger.error({ reviewId: job.data.reviewId, attempt: job.attemptsMade, finalAttempt, err: err.message }, "review job failed");
-  if (finalAttempt) await markFailed(db, job.data.reviewId, err);
+  if (!finalAttempt) return;
+  try {
+    await markFailed(db, job.data.reviewId, err);
+  } catch (dbErr) {
+    // Never an unhandled rejection in an event handler; the row stays "running" and a replay picks it up.
+    logger.error({ reviewId: job.data.reviewId, err: dbErr }, "could not mark review failed");
+  }
 });
 worker.on("ready", () => logger.info({ queue: REVIEW_QUEUE, concurrency: env.WORKER_CONCURRENCY }, "worker ready"));
 

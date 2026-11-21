@@ -13,11 +13,13 @@ import type { Finding, PullRequestRef, TokenUsage } from "./types";
 
 export type ReviewOutcome =
   | { status: "skipped"; reason: string }
+  | { status: "already-posted"; githubReviewId: number }
   | {
       status: "completed";
       githubReviewId: number;
       filesReviewed: number;
       skippedFiles: string[];
+      failedFiles: string[];
       findings: Finding[];
       commentsPosted: number;
       usage: TokenUsage;
@@ -69,9 +71,17 @@ export function validateFindings(findings: Finding[], files: PreparedFile[], con
     .slice(0, config.maxComments);
 }
 
+/** Hidden in every review body: lets a retry find the review it already posted for this commit. */
+export const reviewMarker = (commitId: string) => `<!-- pullpanda:commit=${commitId} -->`;
+
 export function renderComment(f: Finding): string {
   const parts = [`${SEVERITY_ICON[f.severity]} **${f.title}** · _${f.category}_`, f.body];
-  if (f.suggestion !== undefined) parts.push("```suggestion\n" + f.suggestion.replace(/\n$/, "") + "\n```");
+  if (f.suggestion !== undefined) {
+    // The fence must be longer than any backtick run inside the code, or the suggestion breaks out of it.
+    const longest = Math.max(0, ...(f.suggestion.match(/`+/g) ?? []).map((run) => run.length));
+    const fence = "`".repeat(Math.max(3, longest + 1));
+    parts.push(`${fence}suggestion\n${f.suggestion.replace(/\n$/, "")}\n${fence}`);
+  }
   return parts.join("\n\n");
 }
 
@@ -90,6 +100,7 @@ export function renderSummary(opts: {
   findings: Finding[];
   filesReviewed: number;
   skippedFiles: string[];
+  failedFiles?: string[];
   configError?: string;
 }): string {
   const counts = opts.findings.reduce<Record<string, number>>((acc, f) => {
@@ -106,18 +117,26 @@ export function renderSummary(opts: {
   if (opts.skippedFiles.length) {
     lines.push("", `<details><summary>${opts.skippedFiles.length} file(s) skipped (review budget)</summary>\n\n${opts.skippedFiles.map((p) => `- \`${p}\``).join("\n")}\n</details>`);
   }
+  if (opts.failedFiles?.length) {
+    lines.push("", `<details><summary>${opts.failedFiles.length} file(s) not reviewed (the model call failed)</summary>\n\n${opts.failedFiles.map((p) => `- \`${p}\``).join("\n")}\n</details>`);
+  }
   if (opts.configError) lines.push("", `> ⚠️ ${opts.configError}. Using defaults.`);
   lines.push("", `<sub>Configure with \`${CONFIG_PATH}\` · Powered by PullPanda</sub>`);
   return lines.join("\n");
 }
 
-async function mapLimit<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
-  const results = new Array<R>(items.length);
+/** Runs fn over items with bounded concurrency; one failure never discards the others' results. */
+async function settleLimit<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<PromiseSettledResult<R>[]> {
+  const results = new Array<PromiseSettledResult<R>>(items.length);
   let next = 0;
   const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
     while (next < items.length) {
       const i = next++;
-      results[i] = await fn(items[i]!);
+      try {
+        results[i] = { status: "fulfilled", value: await fn(items[i]!) };
+      } catch (reason) {
+        results[i] = { status: "rejected", reason };
+      }
     }
   });
   await Promise.all(workers);
@@ -137,6 +156,11 @@ export async function reviewPullRequest(ref: PullRequestRef, deps: ReviewDeps): 
     await github.getFileText(ref.owner, ref.repo, CONFIG_PATH, ref.headSha),
   );
   if (!config.enabled) return { status: "skipped", reason: `disabled in ${CONFIG_PATH}` };
+
+  // A retry after a crash between posting and recording must not post (or pay for) the review again.
+  const marker = reviewMarker(ref.headSha);
+  const existing = await github.findReview(ref.owner, ref.repo, ref.prNumber, marker);
+  if (existing) return { status: "already-posted", githubReviewId: existing };
   if (pr.draft && !config.reviewDrafts) return { status: "skipped", reason: "draft pull request" };
 
   const chunkOpts = deps.chunk ?? DEFAULT_CHUNK_OPTIONS;
@@ -149,11 +173,16 @@ export async function reviewPullRequest(ref: PullRequestRef, deps: ReviewDeps): 
   if (files.length === 0) return { status: "skipped", reason: "no reviewable changes" };
 
   const { batches, skipped } = chunkFiles(files, chunkOpts);
-  const results = await mapLimit(batches, deps.concurrency ?? 3, (batch) =>
+  const settled = await settleLimit(batches, deps.concurrency ?? 3, (batch) =>
     model.reviewBatch({ pr, files: batch, instructions: config.instructions }),
   );
+  // Post what succeeded; only when every batch failed is the job worth retrying.
+  const ok = settled.flatMap((r, i) => (r.status === "fulfilled" ? [{ result: r.value, batch: batches[i]! }] : []));
+  if (ok.length === 0) throw (settled[0] as PromiseRejectedResult).reason;
+  const results = ok.map((o) => o.result);
+  const failedFiles = settled.flatMap((r, i) => (r.status === "rejected" ? batches[i]!.map((f) => f.path) : []));
 
-  const reviewed = batches.flat();
+  const reviewed = ok.flatMap((o) => o.batch);
   const findings = validateFindings(results.flatMap((r) => r.findings), reviewed, config);
   const usage = results.reduce(
     (acc, r) => ({ inputTokens: acc.inputTokens + r.usage.inputTokens, outputTokens: acc.outputTokens + r.usage.outputTokens }),
@@ -165,14 +194,17 @@ export async function reviewPullRequest(ref: PullRequestRef, deps: ReviewDeps): 
     findings,
     filesReviewed: reviewed.length,
     skippedFiles: skipped,
+    failedFiles,
     configError,
   });
+  const racing = await github.findReview(ref.owner, ref.repo, ref.prNumber, marker);
+  if (racing) return { status: "already-posted", githubReviewId: racing };
   const { id } = await github.createReview({
     owner: ref.owner,
     repo: ref.repo,
     prNumber: ref.prNumber,
     commitId: ref.headSha,
-    body,
+    body: `${body}\n\n${marker}`,
     comments: findings.map(toReviewComment),
   });
 
@@ -181,6 +213,7 @@ export async function reviewPullRequest(ref: PullRequestRef, deps: ReviewDeps): 
     githubReviewId: id,
     filesReviewed: reviewed.length,
     skippedFiles: skipped,
+    failedFiles,
     findings,
     commentsPosted: findings.length,
     usage,

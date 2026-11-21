@@ -83,7 +83,7 @@ export async function reviewsThisMonth(db: Pick<Database, "select">, repo: { id:
 }
 
 export type EnqueueDecision =
-  | { kind: "enqueue"; reviewId: string; plan: PlanId }
+  | { kind: "enqueue"; reviewId: string; plan: PlanId; requeue?: boolean }
   | { kind: "duplicate" }
   | { kind: "skipped"; reason: string };
 
@@ -134,7 +134,16 @@ export async function recordReviewRequest(
       .onConflictDoNothing()
       .returning({ id: reviews.id });
 
-    if (!row) return { kind: "duplicate" } as const;
+    if (!row) {
+      // Already recorded. If it never left "queued" (an enqueue failed, or the job was lost), put it back on
+      // the queue: the job id is the same, so a job that does exist is not added twice.
+      const [prior] = await tx
+        .select({ id: reviews.id, status: reviews.status, plan: reviews.plan })
+        .from(reviews)
+        .where(and(eq(reviews.repositoryId, input.repositoryId), eq(reviews.prNumber, input.prNumber), eq(reviews.headSha, input.headSha)));
+      if (prior?.status === "queued") return { kind: "enqueue", reviewId: prior.id, plan: prior.plan, requeue: true } as const;
+      return { kind: "duplicate" } as const;
+    }
     if (skipReason) return { kind: "skipped", reason: skipReason } as const;
     return { kind: "enqueue", reviewId: row.id, plan } as const;
   });
@@ -246,10 +255,12 @@ export async function applySubscription(
     endsAt: string | null;
     repositoryId: number;
     revoked: boolean;
+    /** When Polar last changed the subscription: webhooks can arrive out of order. */
+    modifiedAt: Date;
   },
-) {
+): Promise<boolean> {
   const periodEnd = sub.endsAt ?? sub.currentPeriodEnd;
-  await db
+  const rows = await db
     .update(repositories)
     .set({
       plan: sub.revoked ? "free" : "pro",
@@ -257,6 +268,20 @@ export async function applySubscription(
       polarCustomerId: sub.customerId,
       subscriptionStatus: sub.status,
       currentPeriodEnd: periodEnd ? new Date(periodEnd) : null,
+      subscriptionUpdatedAt: sub.modifiedAt,
     })
-    .where(eq(repositories.id, sub.repositoryId));
+    .where(
+      and(
+        eq(repositories.id, sub.repositoryId),
+        sql`(${repositories.subscriptionUpdatedAt} is null or ${repositories.subscriptionUpdatedAt} <= ${sub.modifiedAt.toISOString()}::timestamptz)`,
+      ),
+    )
+    .returning({ id: repositories.id });
+  return rows.length > 0;
+}
+
+/** The checkout's metadata is ours, but verify it still names a repo the paying user can manage. */
+export async function subscriptionTargetIsValid(db: Database, repositoryId: number, userId: unknown) {
+  if (typeof userId !== "string") return false;
+  return (await userCanAccessRepo(db, userId, repositoryId)) !== null;
 }

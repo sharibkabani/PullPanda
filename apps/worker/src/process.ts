@@ -11,7 +11,7 @@ import {
 } from "@pullpanda/core";
 import { orm, reviews, type Database } from "@pullpanda/db";
 
-const { eq, sql } = orm;
+const { and, eq, inArray, isNull, sql } = orm;
 
 export interface WorkerDeps {
   db: Database;
@@ -19,10 +19,18 @@ export interface WorkerDeps {
   githubFor(installationId: number): GitHubClient;
 }
 
+/** GitHub answers rate limits (primary and secondary) with 403 too; those clear up, so they retry. */
+function isRateLimited(err: unknown): boolean {
+  const e = err as { message?: string; response?: { headers?: Record<string, string | undefined> } };
+  const h = e.response?.headers ?? {};
+  return h["x-ratelimit-remaining"] === "0" || h["retry-after"] !== undefined || /rate limit/i.test(e.message ?? "");
+}
+
 /** Errors that will fail the same way on retry — don't burn attempts on them. */
 export function isPermanent(err: unknown): boolean {
   if ((err as { permanent?: boolean }).permanent) return true; // e.g. the model refused the batch
   const status = (err as { status?: number }).status;
+  if (status === 403 && isRateLimited(err)) return false;
   return status === 401 || status === 403 || status === 404 || status === 422;
 }
 
@@ -33,20 +41,17 @@ export function isPermanent(err: unknown): boolean {
 export async function processReviewJob(job: ReviewJobData, attempt: number, deps: WorkerDeps) {
   const log = logger.child({ reviewId: job.reviewId, repo: `${job.owner}/${job.repo}`, pr: job.prNumber });
 
-  const existing = await deps.db.query.reviews.findFirst({ where: eq(reviews.id, job.reviewId) });
-  if (!existing) {
-    log.warn("review row missing; dropping job");
-    return { status: "dropped" as const };
-  }
-  if (existing.status === "completed" || existing.githubReviewId) {
-    log.info("already completed; skipping duplicate job");
-    return { status: "duplicate" as const };
-  }
-
-  await deps.db
+  // Claim the row in one statement: a stalled job redelivered to a second worker can't also pass this.
+  const [claimed] = await deps.db
     .update(reviews)
     .set({ status: "running", attempts: sql`${reviews.attempts} + 1` })
-    .where(eq(reviews.id, job.reviewId));
+    .where(and(eq(reviews.id, job.reviewId), isNull(reviews.githubReviewId), inArray(reviews.status, ["queued", "running", "failed"])))
+    .returning({ id: reviews.id });
+  if (!claimed) {
+    const exists = await deps.db.query.reviews.findFirst({ where: eq(reviews.id, job.reviewId), columns: { id: true } });
+    log.info(exists ? "already completed; skipping duplicate job" : "review row missing; dropping job");
+    return { status: exists ? ("duplicate" as const) : ("dropped" as const) };
+  }
 
   const started = performance.now();
   const outcome = await reviewPullRequest(job, {
@@ -55,6 +60,16 @@ export async function processReviewJob(job: ReviewJobData, attempt: number, deps
     chunk: { ...DEFAULT_CHUNK_OPTIONS, totalTokens: PLANS[job.plan].totalTokens },
   });
   const durationMs = Math.round(performance.now() - started);
+
+  if (outcome.status === "already-posted") {
+    // An earlier attempt posted the review and then failed to record it: record it now.
+    await deps.db
+      .update(reviews)
+      .set({ status: "completed", githubReviewId: outcome.githubReviewId, durationMs, completedAt: new Date() })
+      .where(eq(reviews.id, job.reviewId));
+    log.info({ githubReviewId: outcome.githubReviewId }, "review was already posted; recorded it");
+    return outcome;
+  }
 
   if (outcome.status === "skipped") {
     await deps.db

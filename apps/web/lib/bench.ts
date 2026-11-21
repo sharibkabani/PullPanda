@@ -35,7 +35,7 @@ const plotW = W - PAD.l - PAD.r;
 const plotH = H - PAD.t - PAD.b;
 
 function niceMax(v: number, steps = 4) {
-  const raw = v / steps;
+  const raw = Math.max(v, 1) / steps; // an all-zero series still gets a 0..4 axis instead of log10(0)
   const mag = 10 ** Math.floor(Math.log10(raw));
   const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw)!;
   return { max: step * steps, step };
@@ -52,13 +52,15 @@ function yAxis(max: number, step: number, y: (v: number) => number) {
 
 /** The queue during the burst: one line, its peak labelled, the end of the intake marked. */
 export function queueChart(b: Benchmarks["burst"]): string {
-  const pts = b.queueDepth;
+  // A line needs two points; pad a single sample so the x scale never divides by zero.
+  const pts = b.queueDepth.length >= 2 ? b.queueDepth : [...b.queueDepth, ...b.queueDepth, 0].slice(0, 2);
   const { max, step } = niceMax(Math.max(...pts));
   const x = (i: number) => PAD.l + (i / (pts.length - 1)) * plotW;
   const y = (v: number) => PAD.t + plotH - (v / max) * plotH;
   const path = pts.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
   const area = `${path}L${x(pts.length - 1).toFixed(1)},${y(0)}L${x(0)},${y(0)}Z`;
-  const peakI = pts.indexOf(b.peakQueue);
+  const peak = Math.max(...pts);
+  const peakI = Math.max(0, pts.indexOf(peak));
   const intakeX = x(Math.min(pts.length - 1, b.intakeSeconds));
   let xTicks = "";
   for (let s = 0; s < pts.length; s += 10) xTicks += `<text class="bc-tick" x="${x(s)}" y="${H - PAD.b + 22}" text-anchor="middle">${s} s</text>`;
@@ -70,8 +72,8 @@ ${yAxis(max, step, y)}
 <text class="bc-note" x="${intakeX + 8}" y="${y(0) - 12}">Webhooks stop at ${fmt(b.intakeSeconds, 1)} s</text>
 <path class="bc-area" d="${area}"/>
 <path class="bc-line" d="${path}"/>
-<circle class="bc-dot" cx="${x(peakI)}" cy="${y(b.peakQueue)}" r="5"/>
-<text class="bc-label" x="${x(peakI) + 12}" y="${y(b.peakQueue) - 10}">${fmt(b.peakQueue)} waiting</text>
+<circle class="bc-dot" cx="${x(peakI)}" cy="${y(peak)}" r="5"/>
+<text class="bc-label" x="${x(peakI) + 12}" y="${y(peak) - 10}">${fmt(peak)} waiting</text>
 ${xTicks}
 <g class="bc-hover" aria-hidden="true"><line class="bc-cross" y1="${PAD.t}" y2="${y(0)}"/><circle class="bc-hdot" r="5"/></g>
 </svg>`;
@@ -79,6 +81,7 @@ ${xTicks}
 
 /** Reviews per second by worker concurrency: four columns, the value on each cap. */
 export function workerChart(rows: Benchmarks["workers"]): string {
+  if (rows.length === 0) return "";
   const { max, step } = niceMax(Math.max(...rows.map((r) => r.reviewsPerSecond)));
   const y = (v: number) => PAD.t + plotH - (v / max) * plotH;
   const band = plotW / rows.length;

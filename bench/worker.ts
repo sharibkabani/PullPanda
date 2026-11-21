@@ -45,6 +45,9 @@ class StandInGitHub implements GitHubClient {
     const n = 3 + Math.floor(Math.random() * 10);
     return Array.from({ length: n }, (_, i) => ({ path: `src/module${i}/file${i}.ts`, status: "modified", additions: 20, deletions: 5, patch: fakePatch(20 + Math.floor(Math.random() * 130)) }));
   }
+  async findReview() {
+    return null;
+  }
   async getFileText() {
     await sleep(latency(60));
     return null;

@@ -74,6 +74,8 @@ export const repositories = pgTable(
     polarCustomerId: text("polar_customer_id"),
     subscriptionStatus: text("subscription_status"),
     currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }),
+    /** Polar's modified_at of the last subscription event applied; older events are ignored. */
+    subscriptionUpdatedAt: timestamp("subscription_updated_at", { withTimezone: true }),
     createdAt: createdAt(),
   },
   (t) => [index("repositories_installation_idx").on(t.installationId)],

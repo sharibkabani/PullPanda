@@ -18,6 +18,7 @@ const app = createApp({
   db,
   enqueueReview: async () => {},
   claimDelivery: async () => true,
+  releaseDelivery: async () => {},
   oauth: null,
   billing: null,
   health: async () => ({ database: true }),

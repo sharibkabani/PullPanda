@@ -10,6 +10,10 @@ export class FakeGitHub implements GitHubClient {
   async getPullRequest() { return this.pr; }
   async listPullRequestFiles() { return this.files; }
   async getFileText(_o: string, _r: string, path: string) { return this.repoFiles[path] ?? null; }
+  async findReview(_o: string, _r: string, _n: number, marker: string) {
+    const i = this.reviews.findIndex((r) => r.body.includes(marker));
+    return i === -1 ? null : 1001 + i;
+  }
   async createReview(input: Parameters<GitHubClient["createReview"]>[0]) {
     this.reviews.push(input);
     return { id: 1000 + this.reviews.length };

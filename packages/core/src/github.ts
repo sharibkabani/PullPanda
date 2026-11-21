@@ -17,6 +17,8 @@ export interface ReviewCommentInput {
 export interface GitHubClient {
   getPullRequest(owner: string, repo: string, prNumber: number): Promise<PullRequestInfo>;
   listPullRequestFiles(owner: string, repo: string, prNumber: number): Promise<ChangedFile[]>;
+  /** The id of an existing review on the PR whose body contains `marker`, or null. */
+  findReview(owner: string, repo: string, prNumber: number, marker: string): Promise<number | null>;
   /** Returns null when the file does not exist at `ref`. */
   getFileText(owner: string, repo: string, path: string, ref: string): Promise<string | null>;
   createReview(input: {
@@ -96,6 +98,11 @@ export class OctokitGitHubClient implements GitHubClient {
       deletions: f.deletions,
       patch: f.patch,
     }));
+  }
+
+  async findReview(owner: string, repo: string, prNumber: number, marker: string): Promise<number | null> {
+    const reviews = await this.octokit.paginate(this.octokit.pulls.listReviews, { owner, repo, pull_number: prNumber, per_page: 100 });
+    return reviews.find((r) => r.body?.includes(marker))?.id ?? null;
   }
 
   async getFileText(owner: string, repo: string, path: string, ref: string): Promise<string | null> {

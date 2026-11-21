@@ -21,6 +21,9 @@ const app = createApp({
   async claimDelivery(id) {
     return (await redis.set(`gh:delivery:${id}`, "1", "EX", 86_400, "NX")) === "OK";
   },
+  async releaseDelivery(id) {
+    await redis.del(`gh:delivery:${id}`);
+  },
   oauth:
     env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET ? createGitHubOAuth(env.GITHUB_CLIENT_ID, env.GITHUB_CLIENT_SECRET) : null,
   billing:
