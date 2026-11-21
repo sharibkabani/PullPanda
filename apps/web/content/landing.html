@@ -1,0 +1,462 @@
+<!-- type: software
+     deal: hero triptych, nav nav-centre, close close-word, footer footer-dark, rhythm dark-band, buttons solid,
+     mark stack, palette graphite-safety-orange (an editor-dark ground with the orange of a failing check),
+     type onest, radius sharp, ground sand, grounds none, effect gradient-mesh in the one [data-visual] frame
+     (#config), card ground painterly-landscape (#features), moment liquid-type (#statement)
+     The marketing body. app/(marketing)/page.tsx splits it at the three landmarks and injects each one untouched,
+     so the kit's scripts own this markup and React never re-renders it. {{INSTALL_URL}} and {{DASHBOARD_URL}} are
+     filled at build time. -->
+
+<header class="nav nav--centre">
+  <div class="wrap nav__bar">
+    <a class="skip-link" href="#top">Skip to content</a>
+    <a class="nav__logo" href="#top"><span class="mark" data-mark="stack" aria-hidden="true"></span>PullPanda</a>
+    <nav class="nav__links" aria-label="Main">
+      <div class="nav__item"><a class="nav__link" href="#review">Review</a></div>
+      <div class="nav__item"><a class="nav__link" href="#features">Features</a></div>
+      <div class="nav__item"><a class="nav__link" href="#benchmarks">Benchmarks</a></div>
+      <div class="nav__item"><a class="nav__link" href="#config">Rules</a></div>
+      <div class="nav__item"><a class="nav__link" href="#pricing">Pricing</a></div>
+      <div class="nav__item"><a class="nav__link" href="#faq">Questions</a></div>
+    </nav>
+    <div class="nav__actions">
+      <a class="nav__link" href="{{DASHBOARD_URL}}">Sign in</a>
+      <a class="btn btn--primary" href="{{INSTALL_URL}}">Install on GitHub</a>
+    </div>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 5h14M2 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero hero--triptych" data-enter aria-labelledby="hero-h">
+    <div class="wrap"><div class="hero-text grid hero__grid">
+      <div class="span-3">
+        <h1 id="hero-h">AI code review for pull requests</h1>
+        <p class="hero__lead">PullPanda comments on the changed lines of each GitHub pull request, with fixes you commit in one click. 30 free reviews a month.</p>
+      </div>
+      <div class="ly-collage span-6 start-4" role="img" aria-label="A diff with a PullPanda comment and its suggested fix, the review summary with a .pullpanda.yml file, and the review run for one push">
+        <div class="ly-collage__set is-on">
+          <div class="ly-piece pc-diff" style="left: 4%; top: 5%; width: 60%">
+            <div class="pc-file"><img width="24" height="24" data-icon="typescript" src="assets/icons/typescript.svg" alt=""><span>src/users/repository.ts</span><em>+2 −1</em></div>
+            <div class="pc-ln"><i>12</i><code>export function find(id) {</code></div>
+            <div class="pc-ln is-del"><i>13</i><code>  return db.all("users");</code></div>
+            <div class="pc-ln is-add"><i>13</i><code>  const q = "id = " + id;</code></div>
+            <div class="pc-ln is-add is-hit"><i>14</i><code>  return db.where(q);</code></div>
+            <div class="pc-ln"><i>15</i><code>}</code></div>
+          </div>
+          <div class="ly-piece pc-comment" style="left: 36%; top: 58%; width: 60%; height: 38%">
+            <div class="pc-by"><span class="pc-av">PP</span><b>pullpanda</b><span class="pc-sev">critical · security</span></div>
+            <p>The id goes straight into the SQL string. Pass it as a parameter.</p>
+            <div class="pc-sug"><span>Suggested change</span><code>return db.where({ id });</code></div>
+            <span class="pc-btn">Commit suggestion</span>
+          </div>
+          <div class="ly-piece pc-chip" style="left: 68%; top: 8%; width: 28%">
+            <img width="24" height="24" data-icon="github" src="assets/icons/github.svg" alt="" class="ic-ink"><span>Review on #212</span><b>3 comments</b>
+          </div>
+        </div>
+        <div class="ly-collage__set" aria-hidden="true">
+          <div class="ly-piece pc-summary" style="left: 4%; top: 5%; width: 58%">
+            <b class="pc-h">PullPanda review</b>
+            <p>Adds a user lookup and a retry for webhook deliveries. The lookup builds SQL from request input.</p>
+            <div class="pc-tally"><span><i class="t-crit"></i>1 critical</span><span><i class="t-warn"></i>2 warning</span></div>
+            <small>7 files reviewed · package-lock.json skipped</small>
+          </div>
+          <div class="ly-piece pc-yaml" style="left: 40%; top: 50%; width: 56%; height: 46%">
+            <span class="pc-tab">.pullpanda.yml</span>
+<pre><code><b>minSeverity</b>: warning
+<b>maxComments</b>: 10
+<b>ignore</b>:
+  - "docs/**"
+<b>instructions</b>: |
+  Use zod for request input.</code></pre>
+          </div>
+          <div class="ly-piece pc-chip" style="left: 68%; top: 12%; width: 28%">
+            <img width="24" height="24" data-icon="openai" src="assets/icons/openai.svg" alt="" class="ic-ink"><span>Model reply checked</span><b>2 lines dropped</b>
+          </div>
+        </div>
+        <div class="ly-collage__set" aria-hidden="true">
+          <div class="ly-piece pc-run" style="left: 4%; top: 5%; width: 54%">
+            <b class="pc-h">Push to #212 · a41c9e0</b>
+            <div class="pc-step is-done"><i></i><span>Signature checked</span><em>2 ms</em></div>
+            <div class="pc-step is-done"><i></i><span>Queued once for this commit</span><em>8 ms</em></div>
+            <div class="pc-step is-done"><i></i><span>Diff split into 2 batches</span><em>0.4 s</em></div>
+            <div class="pc-step is-done"><i></i><span>Review posted to GitHub</span><em>38 s</em></div>
+          </div>
+          <div class="ly-piece pc-plan" style="left: 62%; top: 10%; width: 34%">
+            <small>acme/payments</small><b>Pro</b><span>Private repository</span>
+          </div>
+          <div class="ly-piece pc-stat" style="left: 30%; top: 62%; width: 66%; height: 34%">
+            <div><b>3</b><span>comments</span></div><div><b>7</b><span>files</span></div><div><b>38 s</b><span>to review</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="span-3 start-10 hero__cta"><a class="btn btn--primary" href="{{INSTALL_URL}}">Install on GitHub<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a></div>
+    </div></div>
+  </section>
+
+  <section class="section" id="review" aria-labelledby="review-h">
+    <div class="wrap">
+      <div class="grid">
+        <h2 id="review-h" class="span-5">Every pull request, reviewed where you read it</h2>
+        <div class="span-6 start-7 stack-4">
+          <p>A push reaches PullPanda as a webhook. The diff is read, comments land on the lines that changed, and the fix sits under each one as a GitHub suggestion.</p>
+          <a class="link" href="#config">See the review rules</a>
+        </div>
+      </div>
+      <div class="ui app fill" role="img" aria-label="A list of open pull requests with their review state, beside one diff where PullPanda flags a SQL query built from input and offers the fix" data-ui-pause-host>
+        <div class="app__pane app__pane--list">
+          <div class="ui ui-panel ui-win" data-ui="window" data-open="Queued" data-work="Reviewing" data-done="Reviewed">
+            <div class="ui-win__bar">
+              <span class="ui-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="ui-win__crumb">acme <i>/</i> <b>Pull requests</b></span>
+              <span class="ui-spacer"></span>
+              <span class="ui-win__search" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg><span class="ui-win__ph">Search</span><span class="ui-kbd">/</span></span>
+            </div>
+            <div class="ui-win__body">
+              <nav class="ui-win__side" aria-hidden="true">
+                <span class="ui-win__nav is-on"><svg class="ui-icon" viewBox="0 0 16 16"><path d="M2.5 9h3l1 1.5h3l1-1.5h3"/><path d="M2.5 9 4 3.5h8L13.5 9v3.5h-11z"/></svg>Open<em>11</em></span>
+                <span class="ui-win__nav"><svg class="ui-icon" viewBox="0 0 16 16"><circle cx="8" cy="6" r="2.5"/><path d="M3.5 13.5c.6-2.3 2.4-3.5 4.5-3.5s3.9 1.2 4.5 3.5"/></svg>Mine<em>3</em></span>
+                <span class="ui-win__nav"><svg class="ui-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M8 5v3l2 1.5"/></svg>Queued<em>2</em></span>
+                <span class="ui-win__nav"><svg class="ui-icon" viewBox="0 0 16 16"><path d="m3.5 8.4 2.8 2.8 6.2-6.4"/></svg>Reviewed</span>
+                <span class="ui-win__label">Repos</span>
+                <span class="ui-win__nav"><span class="ui-win__hash">#</span>api</span>
+                <span class="ui-win__nav"><span class="ui-win__hash">#</span>payments</span>
+              </nav>
+              <div class="ui-win__main">
+                <div class="ui-win__cols" aria-hidden="true"><span>Author</span><span>Pull request</span><span>Review</span><span>Age</span></div>
+                <ul class="ui-win__rows">
+                  <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="1">AP</span><span class="ui-win__who">api-team</span><span class="ui-win__sub">#212 User lookup by id · +38 −4</span><span class="ui-win__st" data-st>Queued</span><span class="ui-win__age">1m</span></li>
+                  <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="3">PY</span><span class="ui-win__who">payments</span><span class="ui-win__sub">#211 Retry settle jobs · +4 −3</span><span class="ui-win__st" data-st>Queued</span><span class="ui-win__age">4m</span></li>
+                  <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="4">WB</span><span class="ui-win__who">web</span><span class="ui-win__sub">#210 Cache price list · +61 −12</span><span class="ui-win__st" data-st>Queued</span><span class="ui-win__age">9m</span></li>
+                  <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="2">IN</span><span class="ui-win__who">infra</span><span class="ui-win__sub">#209 Pin Redis to 7.4 · +2 −2</span><span class="ui-win__st is-done" data-st>Reviewed</span><span class="ui-win__age">16m</span></li>
+                  <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="5">MB</span><span class="ui-win__who">mobile</span><span class="ui-win__sub">#208 Offline sync queue · +214 −80</span><span class="ui-win__st is-you" data-st>Draft</span><span class="ui-win__age">22m</span></li>
+                  <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="1">AP</span><span class="ui-win__who">api-team</span><span class="ui-win__sub">#207 Rate limit login · +27 −1</span><span class="ui-win__st is-done" data-st>Reviewed</span><span class="ui-win__age">35m</span></li>
+                  <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="3">PY</span><span class="ui-win__who">payments</span><span class="ui-win__sub">#206 Refund webhooks · +90 −15</span><span class="ui-win__st is-done" data-st>Reviewed</span><span class="ui-win__age">1h</span></li>
+                  <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="2">IN</span><span class="ui-win__who">infra</span><span class="ui-win__sub">#205 Drain workers on deploy · +18 −6</span><span class="ui-win__st is-done" data-st>Reviewed</span><span class="ui-win__age">2h</span></li>
+                  <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="4">WB</span><span class="ui-win__who">web</span><span class="ui-win__sub">#204 Fix date in invoices · +3 −3</span><span class="ui-win__st is-done" data-st>Reviewed</span><span class="ui-win__age">3h</span></li>
+                  <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="5">MB</span><span class="ui-win__who">mobile</span><span class="ui-win__sub">#203 Push token refresh · +44 −9</span><span class="ui-win__st is-done" data-st>Reviewed</span><span class="ui-win__age">5h</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="app__pane app__pane--open" data-ui-loop>
+          <div class="ui ui-panel ui-diff" data-ui="diff-review">
+            <div class="ui-diff__head">
+              <svg class="ui-icon ui-diff__fold" viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 6.25 3.5 3.5 3.5-3.5"/></svg>
+              <span class="ui-diff__tool" aria-hidden="true"><img loading="lazy" width="24" height="24" data-icon="typescript" src="assets/icons/typescript.svg" alt=""></span>
+              <span class="ui-diff__repo">acme/api</span><i class="ui-diff__slash" aria-hidden="true">/</i>
+              <span class="ui-diff__path"><span class="ui-diff__dir">src/users/</span><b>repository.ts</b></span>
+              <span class="ui-spacer"></span>
+              <span class="ui-diff__stat"><b class="is-add"><span class="ui-diff__was">+3</span><span class="ui-diff__now">+4</span></b><b class="is-del"><span class="ui-diff__was">&minus;1</span><span class="ui-diff__now">&minus;2</span></b><span class="ui-diff__bar" aria-hidden="true"><i class="is-add"></i><i class="is-add"></i><i class="is-add"></i><i class="is-del"></i><i></i></span></span>
+            </div>
+            <div class="ui-diff__hunk"><span>@@ -10,16 +10,18 @@</span> <em class="ui-diff__sig">export class UserRepository {</em></div>
+            <div class="ui-diff__lines">
+              <div class="ui-diff__ln"><i>10</i><i>10</i><span class="ui-diff__code" data-i="1"><span class="ui-diff__ind">  </span><span class="k">constructor</span>(<span class="k">private</span> db: Db) {}</span></div>
+              <div class="ui-diff__ln"><i>11</i><i>11</i><span class="ui-diff__code" data-i="0"></span></div>
+              <div class="ui-diff__ln is-del"><i>12</i><i></i><span class="ui-diff__code" data-i="1"><span class="ui-diff__ind">  </span><span class="k">async</span> <span class="f">find</span>() {</span></div>
+              <div class="ui-diff__ln is-add"><i></i><i>12</i><span class="ui-diff__code" data-i="1"><span class="ui-diff__ind">  </span><span class="k">async</span> <span class="f">findById</span>(<mark class="ui-diff__w">id: string</mark>) {</span></div>
+              <div class="ui-diff__ln is-add"><i></i><i>13</i><span class="ui-diff__code" data-i="2"><span class="ui-diff__ind">    </span><span class="k">const</span> sql = <span class="s">"SELECT * FROM users WHERE id = "</span> + id;</span></div>
+              <div class="ui-diff__ln is-target" data-diff-target><i>14</i><i>14</i><span class="ui-diff__code" data-i="2"><span class="ui-diff__ind">    </span><span class="k">return</span> <span class="k">this</span>.db.<span class="f">query</span>(<mark class="ui-diff__w">sql</mark>);</span></div>
+              <div class="ui-diff__sug" data-diff-sug><div class="ui-diff__ln is-add"><i></i><i>14</i><span class="ui-diff__code" data-i="2"><span class="ui-diff__ind">    </span><span class="k">return</span> <span class="k">this</span>.db.<span class="f">query</span>(<mark class="ui-diff__w"><span class="s">"SELECT * FROM users WHERE id = $1"</span>, id</mark>);</span></div></div>
+              <div class="ui-diff__thread">
+                <div class="ui-diff__by">
+                  <span class="ui-avatar" data-tone="4">PP</span>
+                  <span class="ui-diff__name">pullpanda</span>
+                  <span class="ui-diff__time">now</span>
+                  <span class="ui-spacer"></span>
+                  <span class="ui-diff__act" data-diff-act>
+                    <button class="ui-btn ui-btn--sm ui-diff__apply" type="button" tabindex="-1" data-diff-apply><span class="ui-diff__lbl">Commit suggestion</span><i class="ui-diff__spin" aria-hidden="true"></i></button>
+                    <span class="ui-chip ui-diff__done"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 8.4 2.6 2.6L12 5.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Committed</span>
+                  </span>
+                </div>
+                <div class="ui-diff__msg">Critical: <code>id</code> comes from the request. Pass it as a query parameter.</div>
+              </div>
+              <div class="ui-diff__ln"><i>15</i><i>15</i><span class="ui-diff__code" data-i="1"><span class="ui-diff__ind">  </span>}</span></div>
+              <div class="ui-diff__ln"><i>16</i><i>16</i><span class="ui-diff__code" data-i="0"></span></div>
+              <div class="ui-diff__ln"><i>17</i><i>17</i><span class="ui-diff__code" data-i="1"><span class="ui-diff__ind">  </span><span class="k">async</span> <span class="f">create</span>(input: NewUser) {</span></div>
+              <div class="ui-diff__ln"><i>18</i><i>18</i><span class="ui-diff__code" data-i="2"><span class="ui-diff__ind">    </span><span class="k">const</span> data = userSchema.<span class="f">parse</span>(input);</span></div>
+              <div class="ui-diff__ln"><i>19</i><i>19</i><span class="ui-diff__code" data-i="2"><span class="ui-diff__ind">    </span><span class="k">return</span> <span class="k">this</span>.db.<span class="f">insert</span>(users).<span class="f">values</span>(data);</span></div>
+              <div class="ui-diff__ln"><i>20</i><i>20</i><span class="ui-diff__code" data-i="1"><span class="ui-diff__ind">  </span>}</span></div>
+              <div class="ui-diff__ln"><i>21</i><i>21</i><span class="ui-diff__code" data-i="0"></span></div>
+              <div class="ui-diff__ln is-add"><i></i><i>22</i><span class="ui-diff__code" data-i="1"><span class="ui-diff__ind">  </span><span class="k">async</span> <span class="f">touch</span>(id: string) {</span></div>
+              <div class="ui-diff__ln"><i>22</i><i>23</i><span class="ui-diff__code" data-i="2"><span class="ui-diff__ind">    </span><span class="k">await</span> <span class="k">this</span>.db.<span class="f">update</span>(users)</span></div>
+              <div class="ui-diff__ln"><i>23</i><i>24</i><span class="ui-diff__code" data-i="3"><span class="ui-diff__ind">      </span>.<span class="f">set</span>({ seenAt: <span class="k">new</span> <span class="f">Date</span>() })</span></div>
+              <div class="ui-diff__ln"><i>24</i><i>25</i><span class="ui-diff__code" data-i="3"><span class="ui-diff__ind">      </span>.<span class="f">where</span>(<span class="f">eq</span>(users.id, id));</span></div>
+              <div class="ui-diff__ln"><i>25</i><i>26</i><span class="ui-diff__code" data-i="1"><span class="ui-diff__ind">  </span>}</span></div>
+              <div class="ui-diff__ln"><i>26</i><i>27</i><span class="ui-diff__code" data-i="0">}</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="statement" aria-labelledby="statement-h">
+    <div class="wrap">
+      <div class="grid fill">
+        <div class="span-6 stack-6" data-moment="liquid-type">
+          <h2 id="statement-h" class="mo-lt__type">PullPanda comments on changed lines</h2>
+          <p class="t-lead">One GitHub review per push, each finding pinned to its line with the reason and the fix. The summary on top counts what it found.</p>
+        </div>
+        <div class="frame frame--split span-6 start-7" data-fx="painterly-landscape" data-fx-seed="66" data-fx-params='{"speed":0,"drift":0}'>
+          <div class="stage stage--fade-b"><div class="at-rise to-edge" style="--w:440px;--ay:48px">
+            <div class="ui ui-doc" data-ui="doc">
+              <article class="ui-doc__page">
+                <div class="ui-doc__label">Review on #212, commit a41c9e0</div>
+                <div class="ui-doc__title">PullPanda review</div>
+                <div class="ui-doc__text">Adds a user lookup and retries webhook deliveries. The lookup <mark class="ui-doc__mark is-on">builds SQL from request input</mark>.</div>
+                <div class="ui-doc__text">The retry loop <mark class="ui-doc__mark" data-kind="Warning" data-msg="The loop retries a 404 forever." data-where="src/webhooks/retry.ts, line 31">never stops on a 404</mark> from GitHub.</div>
+                <div class="ui-doc__text">7 files reviewed: 1 critical, 2 warnings.</div>
+                <div class="ui-doc__text">Skipped package-lock.json, a lockfile.</div>
+              </article>
+              <aside class="ui-doc__note ui-panel is-on" aria-live="polite">
+                <div class="ui-doc__kind"><span class="ui-doc__dot"></span><span data-doc-kind>Critical</span></div>
+                <div class="ui-doc__msg" data-doc-msg>The id reaches the query string unescaped.</div>
+                <div class="ui-doc__where" data-doc-where>src/users/repository.ts, line 14</div>
+              </aside>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section g2" id="features" aria-labelledby="features-h">
+    <div class="wrap">
+      <div class="group">
+        <div class="section-head">
+          <h2 id="features-h">What PullPanda does on each push. <span class="muted">Reviews, rules, batching and checks.</span></h2>
+        </div>
+        <div class="grid">
+          <article class="card card--row span-6 m-nolift">
+            <h3>Reviews every new commit</h3>
+            <p>Each push gets one review, and a newer push makes the stale one skip.</p>
+            <div class="panel panel--flush" data-fx="painterly-landscape" data-fx-seed="21" data-fx-palette='{"bg":"#c6d3df","surface":"#d6e0e9","ink":"#25303a","accent":"#3f6a92"}' data-fx-params='{"speed":0,"drift":0}'>
+              <div class="stage stage--fade-b"><div class="at-rise fit" style="--fit-max:400px;--ax:max(24px, 50% - 200px);--ay:calc(100% - 150px);--ay-sm:40px" data-ui-loop>
+                <div class="ui ui-notify" data-ui="notify">
+                  <ul class="ui-notify__list" data-notify-list>
+                    <li class="ui-note"><span class="ui-agent ui-note__av" aria-hidden="true"></span><span class="ui-note__text"><span class="ui-note__title">Review posted on #212<time>now</time></span><span class="ui-note__body">1 critical, 2 warnings on 7 files</span></span><span class="ui-btn ui-btn--sm ui-note__btn">Open</span></li>
+                    <li class="ui-note"><span class="ui-avatar ui-note__av" data-tone="3">PY</span><span class="ui-note__text"><span class="ui-note__title">New push to #211<time>3m</time></span><span class="ui-note__body">Queued for commit 9be21f4</span></span></li>
+                    <li class="ui-note"><span class="ui-note__ico"><svg class="ui-icon" viewBox="0 0 16 16"><path d="m3.5 8.4 2.8 2.8 6.2-6.4"/></svg></span><span class="ui-note__text"><span class="ui-note__title">#208 skipped<time>9m</time></span><span class="ui-note__body">Draft pull request</span></span></li>
+                  </ul>
+                </div>
+              </div></div>
+            </div>
+          </article>
+          <article class="card card--row span-6 m-nolift">
+            <h3>Follows each repository's rules</h3>
+            <p>Severity floor, comment cap and skipped paths come from the repository itself.</p>
+            <div class="panel panel--flush" data-fx="painterly-landscape" data-fx-seed="34" data-fx-palette='{"bg":"#d9ccb7","surface":"#e9e0d2","ink":"#2a2622","accent":"#a8794a"}' data-fx-params='{"speed":0,"drift":0}'>
+              <div class="stage stage--fade-b"><div class="at-right to-edge" style="--ax:32px;--ay:48px;--ay-sm:32px">
+                <div class="ui ui-panel ui-toggles" data-ui="toggles">
+                  <div class="ui-head">
+                    <svg class="ui-icon ui-toggles__ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.8 13 4v3.6c0 3-2.1 5.4-5 6.6-2.9-1.2-5-3.6-5-6.6V4z"/><path d="m5.8 8 1.6 1.6 3-3.2"/></svg>
+                    <div class="ui-title">Rules for acme/api</div>
+                    <span class="ui-spacer"></span>
+                    <div class="ui-meta" data-tg-count>3 of 5 on</div>
+                  </div>
+                  <ul class="ui-toggles__list">
+                    <li class="ui-tg"><span class="ui-tg__text"><span class="ui-tg__label">Warnings and above</span><span class="ui-tg__sub">Suggestions and nits stay quiet</span></span><button class="ui-switch is-on" type="button" role="switch" aria-checked="true" aria-label="Warnings and above"><i></i></button></li>
+                    <li class="ui-tg"><span class="ui-tg__text"><span class="ui-tg__label">Skip docs/**</span><span class="ui-tg__sub">Lockfiles are always skipped</span></span><button class="ui-switch is-on" type="button" role="switch" aria-checked="true" aria-label="Skip docs"><i></i></button></li>
+                    <li class="ui-tg"><span class="ui-tg__text"><span class="ui-tg__label">Review drafts</span><span class="ui-tg__sub">Off until ready for review</span></span><button class="ui-switch" type="button" role="switch" aria-checked="false" aria-label="Review drafts"><i></i></button></li>
+                    <li class="ui-tg"><span class="ui-tg__text"><span class="ui-tg__label">At most 10 comments</span><span class="ui-tg__sub">Most severe first</span></span><button class="ui-switch is-on" type="button" role="switch" aria-checked="true" aria-label="At most 10 comments"><i></i></button></li>
+                    <li class="ui-tg"><span class="ui-tg__text"><span class="ui-tg__label">Review private repos</span><span class="ui-tg__sub">Needs Pro on that repository</span></span><button class="ui-switch" type="button" role="switch" aria-checked="false" aria-label="Review private repos"><i></i></button></li>
+                  </ul>
+                </div>
+              </div></div>
+            </div>
+          </article>
+        </div>
+      </div>
+      <div class="grid">
+        <article class="card card--row span-6 m-nolift">
+          <h3>Splits large pull requests</h3>
+          <p>Diffs are packed into batches, reviewed side by side and merged into one review.</p>
+          <div class="panel panel--flush" data-fx="painterly-landscape" data-fx-seed="47" data-fx-palette='{"bg":"#cdd6c6","surface":"#dce3d6","ink":"#262d24","accent":"#6c8e63"}' data-fx-params='{"speed":0,"drift":0}'>
+            <div class="dg" data-dg-still data-diagram='{"layout":"lanes","alt":"Pull request 212 is split into three batches of diffs, each reviewed by the model, then merged into one GitHub review.","curve":"curve","input":{"label":"#212","icon":"github","cap":false},"core":{"label":"Batcher","icon":"ui:box"},"lanes":[{"label":"Batch 1","icon":"openai","done":true,"cap":false},{"label":"Batch 2","icon":"openai","done":true,"cap":false},{"label":"Batch 3","icon":"openai","done":true,"cap":false}]}'></div>
+          </div>
+        </article>
+        <article class="card card--row span-6 m-nolift">
+          <h3>Reviews each commit once</h3>
+          <p>Webhooks are signature-checked and keyed to the commit, so nothing posts twice.</p>
+          <div class="panel panel--flush" data-fx="painterly-landscape" data-fx-seed="58" data-fx-palette='{"bg":"#d9ccb7","surface":"#e9e0d2","ink":"#2a2622","accent":"#a8794a"}' data-fx-params='{"speed":0,"drift":0}'>
+            <div class="stage stage--fade-b"><div class="at-rise fit" style="--fit-max:400px;--ax:max(24px, 50% - 200px);--ay:48px;--ay-sm:24px">
+              <div class="ui ui-panel ui-checks" data-ui="checklist">
+                <div class="ui-checks__head">
+                  <div class="ui-title">Delivery for push a41c9e0</div>
+                  <span class="ui-spacer"></span>
+                  <div class="ui-meta" data-checks-count>3 of 5</div>
+                </div>
+                <div class="ui-checks__bar"><i data-checks-bar style="--k:0.6"></i></div>
+                <ul class="ui-checks__list">
+                  <li class="ui-check is-done"><span class="ui-check__box"><svg viewBox="0 0 16 16"><path d="m4.5 8.2 2.3 2.3 4.7-5"/></svg></span><span class="ui-check__label">HMAC signature matches</span></li>
+                  <li class="ui-check is-done"><span class="ui-check__box"><svg viewBox="0 0 16 16"><path d="m4.5 8.2 2.3 2.3 4.7-5"/></svg></span><span class="ui-check__label">Delivery id not seen before</span></li>
+                  <li class="ui-check is-done"><span class="ui-check__box"><svg viewBox="0 0 16 16"><path d="m4.5 8.2 2.3 2.3 4.7-5"/></svg></span><span class="ui-check__label">Commit not reviewed yet</span></li>
+                  <li class="ui-check"><span class="ui-check__box"><svg viewBox="0 0 16 16"><path d="m4.5 8.2 2.3 2.3 4.7-5"/></svg></span><span class="ui-check__label">Plan covers this repository</span></li>
+                  <li class="ui-check"><span class="ui-check__box"><svg viewBox="0 0 16 16"><path d="m4.5 8.2 2.3 2.3 4.7-5"/></svg></span><span class="ui-check__label">Job queued with 4 retries</span></li>
+                </ul>
+              </div>
+            </div></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="benchmarks" aria-labelledby="benchmarks-h">
+    <div class="wrap">
+      <div class="grid">
+        <h2 id="benchmarks-h" class="span-5">PullPanda under load</h2>
+        <div class="span-6 start-7 stack-4">
+          <p>{{B_EVENTS}} signed pull request events hit two API instances in {{B_INTAKE_S}} seconds, answered at {{B_INTAKE_P99}} ms p99. One worker cleared the queue in {{B_DRAIN_S}} seconds. GitHub and the model were stand-ins that wait as long as the real ones.</p>
+          <a class="link" href="benchmarks/">See every run and how it was measured</a>
+        </div>
+      </div>
+      <div class="grid bench-row fill">
+        <div class="frame bench-frame span-6">
+          <h3>Reviews waiting during the burst</h3>
+          {{BENCH_QUEUE_SVG}}
+        </div>
+        <div class="frame bench-frame span-6 start-7">
+          <h3>Reviews per second from one worker</h3>
+          {{BENCH_WORKER_SVG}}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section ground-inverse" id="config" aria-labelledby="config-h">
+    <div class="wrap">
+      <div class="grid fill">
+        <div class="span-5 stack-6">
+          <h2 id="config-h">Set the rules in .pullpanda.yml</h2>
+          <p class="t-lead">Commit the file and PullPanda reads it from each pull request's head commit. Set the lowest severity to post, the paths to skip and your team's guidelines in plain English.</p>
+          <ul class="facts">
+            <li>Up to 50 comments a review</li>
+            <li>Drafts wait until marked ready</li>
+            <li>Guidelines up to 4,000 characters</li>
+          </ul>
+          <a class="link" href="#faq">Read the setup questions</a>
+        </div>
+        <div class="frame frame--split span-6 start-7" data-visual data-fx="gradient-mesh" data-fx-seed="41" data-fx-params='{"calmX":0.5,"calmY":0.4}'>
+          <div class="stage stage--fade-br"><div class="at-rise to-edge" style="--w:420px;--ay:56px">
+            <div class="ui ui-panel ui-code" data-ui="code">
+              <div class="ui-code__tabs">
+                <span class="ui-code__tab is-on"><i class="ui-code__lang">YML</i>.pullpanda.yml</span>
+                <span class="ui-spacer"></span>
+                <span class="ui-chip ui-chip--plain ui-code__chip" data-code-chip>valid</span>
+              </div>
+<pre class="ui-code__pre"><code><span class="ui-code__ln" data-n="1"><span class="k">enabled</span>: <span class="n">true</span></span>
+<span class="ui-code__ln" data-n="2"><span class="k">minSeverity</span>: <span class="s">warning</span></span>
+<span class="ui-code__ln" data-n="3" data-note="Lockfiles and build output are skipped anyway."><span class="k">ignore</span>:</span>
+<span class="ui-code__ln" data-n="4">  - <span class="s">"docs/**"</span></span>
+<span class="ui-code__ln" data-n="5">  - <span class="s">"**/*.generated.ts"</span></span>
+<span class="ui-code__ln" data-n="6"><span class="k">maxComments</span>: <span class="n">10</span></span>
+<span class="ui-code__ln" data-n="7"><span class="k">reviewDrafts</span>: <span class="n">false</span></span>
+<span class="ui-code__ln is-mark" data-n="8"><span class="k">instructions</span>: |</span>
+<span class="ui-code__ln" data-n="9">  Use zod for input.</span>
+<span class="ui-code__ln" data-n="10">  Money in integer cents.</span></code></pre>
+              <div class="ui-code__hint" data-code-hint><span class="ui-dot"></span><span data-code-text>Read from commit a41c9e0.</span></div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="pricing" style="--hm: 2" aria-labelledby="pricing-h">
+    <div class="wrap">
+      <div class="grid fill">
+        <div class="span-4 stack-6">
+          <h2 id="pricing-h">Pricing</h2>
+          <p>Pro is bought per repository, so you pay only for the private code you want reviewed. Both plans post line comments with suggested fixes.</p>
+          <a class="link" href="#faq">Read the billing questions</a>
+        </div>
+        <article class="card card--plan span-4 start-5 m-nolift">
+          <span class="ic-tile ic-tile--40"><img loading="lazy" width="24" height="24" class="ic" data-icon="github" src="assets/icons/github.svg" alt=""></span>
+          <h3>Free</h3>
+          <p>For open-source and public repositories</p>
+          <p class="plan__price"><b>$0</b></p>
+          <a class="btn btn--secondary" href="{{DASHBOARD_URL}}">Start the free plan</a>
+          <ul class="plan__lines">
+            <li>Public repositories</li>
+            <li>30 reviews a month per account</li>
+            <li>Every severity level</li>
+            <li>Rules in .pullpanda.yml</li>
+            <li>Review history in the dashboard</li>
+          </ul>
+        </article>
+        <article class="card card--plan is-featured span-4 start-9 m-nolift">
+          <span class="ic-tile ic-tile--40"><img loading="lazy" width="24" height="24" class="ic" data-icon="ui:lock" src="assets/icons/ui-lock.svg" alt=""></span>
+          <h3>Pro</h3>
+          <p>For one private repository</p>
+          <p class="plan__price"><b data-assumed>$12</b> <small>per repository a month</small></p>
+          <a class="btn btn--secondary" href="{{DASHBOARD_URL}}">Upgrade a repository</a>
+          <ul class="plan__lines">
+            <li>Private repositories</li>
+            <li>1,000 reviews a month</li>
+            <li>A larger budget for big diffs</li>
+            <li>Billed monthly through Polar</li>
+            <li>Cancel from the billing portal</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="faq" aria-labelledby="faq-h">
+    <div class="wrap">
+      <div class="grid grid--top">
+        <div class="span-5 stack-4">
+          <h2 id="faq-h">Questions</h2>
+          <p>What teams ask before they install.</p>
+          <a class="link" href="mailto:hello@pullpanda.example">Email us</a>
+          <div class="faq__tools" aria-label="Runs on GitHub and OpenAI">
+            <span class="ic-tile ic-tile--56"><img loading="lazy" width="24" height="24" class="ic" data-icon="github" src="assets/icons/github.svg" alt="GitHub"></span>
+            <span class="ic-tile ic-tile--56"><img loading="lazy" width="24" height="24" class="ic" data-icon="openai" src="assets/icons/openai.svg" alt="OpenAI"></span>
+          </div>
+        </div>
+        <div class="faq span-6 start-7">
+          <div class="faq__item"><h3>Does PullPanda keep my code?</h3><p>No. The worker fetches the diff from GitHub for the review and stores only the findings and token counts.</p></div>
+          <div class="faq__item"><h3>Does PullPanda read the whole repository?</h3><p>No. It reads the changed lines and the lines around them, so it can miss a problem that only shows across files.</p></div>
+          <div class="faq__item"><h3>What starts a review?</h3><p>Opening, reopening or marking a pull request ready, and every push to it.</p></div>
+          <div class="faq__item"><h3>Can I turn reviews off for one repository?</h3><p>Yes. Switch it off in the dashboard, or commit <code>enabled: false</code> in .pullpanda.yml.</p></div>
+          <div class="faq__item"><h3>Which model writes the reviews?</h3><p>An OpenAI model chosen by whoever runs PullPanda. Its answer is checked against the diff, and comments on lines outside it are dropped.</p></div>
+          <div class="faq__item"><h3>How do I cancel a Pro subscription?</h3><p>Cancel in the billing portal. Pro stays on for that repository until the paid month ends.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer closing footer--dark ground-inverse" id="contact" aria-labelledby="close-h">
+  <div class="wrap">
+    <div class="closing__cta close--word">
+      <div class="section-head--split">
+        <div><h2 id="close-h">Review your next pull request</h2><p class="t-lead">Pick the repositories during the GitHub install.</p></div>
+        <a class="btn btn--primary" href="{{INSTALL_URL}}">Install on GitHub<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a>
+      </div>
+      <p class="close__word" aria-hidden="true">PullPanda</p>
+    </div>
+    <div class="closing__links">
+      <div class="grid">
+        <div class="span-4 stack-4">
+          <a class="nav__logo" href="#top"><span class="mark" data-mark="stack" aria-hidden="true"></span>PullPanda</a>
+          <p class="footer__lede">AI code review for GitHub pull requests.</p>
+        </div>
+        <div class="span-2 footer__col"><h3>Product</h3><ul><li><a href="#review">Review</a></li><li><a href="#features">Features</a></li><li><a href="#config">Rules</a></li><li><a href="#benchmarks">Benchmarks</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Plans</h3><ul><li><a href="#pricing">Pricing</a></li><li><a href="#faq">Questions</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Account</h3><ul><li><a href="{{DASHBOARD_URL}}">Dashboard</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Contact</h3><ul><li><a href="mailto:hello@pullpanda.example">Email us</a></li></ul></div>
+      </div>
+      <div class="footer__legal">
+        <span>&copy; 2026 PullPanda &nbsp; <a href="privacy/">Privacy</a> &nbsp; <a href="terms/">Terms</a></span>
+        <div class="socials"></div>
+        <span>Product names and logos are trademarks of their owners</span>
+      </div>
+    </div>
+  </div>
+</footer>

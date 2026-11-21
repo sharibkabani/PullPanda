@@ -1,0 +1,39 @@
+{
+  "label": "probe",
+  "total": 20000,
+  "concurrency": 128,
+  "installations": 1000,
+  "dupRate": 0.1,
+  "uniqueEvents": 17991,
+  "seconds": 13.35,
+  "throughputRps": 1498,
+  "latencyMs": {
+    "count": 20000,
+    "mean": 85.32,
+    "p50": 84.63,
+    "p90": 93.35,
+    "p95": 97.49,
+    "p99": 104.46,
+    "max": 114.58
+  },
+  "statuses": {
+    "202": 17986,
+    "200 duplicate": 2014
+  },
+  "perSecond": [
+    1536,
+    1536,
+    1654,
+    1427,
+    1519,
+    1453,
+    1476,
+    1535,
+    1421,
+    1523,
+    1408,
+    1434,
+    1500,
+    578
+  ]
+}

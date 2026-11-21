@@ -1,0 +1,33 @@
+{
+  "label": "e2e-intake",
+  "total": 12000,
+  "concurrency": 64,
+  "apiInstances": 2,
+  "installations": 2000,
+  "dupRate": 0.1,
+  "uniqueEvents": 10761,
+  "seconds": 6.66,
+  "throughputRps": 1803,
+  "latencyMs": {
+    "count": 12000,
+    "mean": 35.46,
+    "p50": 33.84,
+    "p90": 47.23,
+    "p95": 52.11,
+    "p99": 72.21,
+    "max": 267.3
+  },
+  "statuses": {
+    "202": 10760,
+    "200 duplicate": 1240
+  },
+  "perSecond": [
+    1303,
+    1843,
+    1799,
+    1844,
+    1931,
+    1968,
+    1312
+  ]
+}

@@ -1,0 +1,2 @@
+CREATE INDEX "reviews_quota_installation_idx" ON "reviews" USING btree ("installation_id","plan","created_at");--> statement-breakpoint
+CREATE INDEX "reviews_quota_repository_idx" ON "reviews" USING btree ("repository_id","plan","created_at");

@@ -1,0 +1,38 @@
+{
+  "label": "opt-c128",
+  "total": 20000,
+  "concurrency": 128,
+  "installations": 1000,
+  "dupRate": 0.1,
+  "uniqueEvents": 18052,
+  "seconds": 12.37,
+  "throughputRps": 1616,
+  "latencyMs": {
+    "count": 20000,
+    "mean": 79.05,
+    "p50": 77.85,
+    "p90": 85.19,
+    "p95": 88.8,
+    "p99": 99.49,
+    "max": 117.95
+  },
+  "statuses": {
+    "202": 18047,
+    "200 duplicate": 1953
+  },
+  "perSecond": [
+    1536,
+    1664,
+    1663,
+    1664,
+    1542,
+    1658,
+    1660,
+    1561,
+    1629,
+    1557,
+    1643,
+    1542,
+    681
+  ]
+}

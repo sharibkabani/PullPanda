@@ -1,0 +1,34 @@
+{
+  "label": "pool30-c128",
+  "total": 20000,
+  "concurrency": 128,
+  "installations": 1000,
+  "dupRate": 0.1,
+  "uniqueEvents": 18005,
+  "seconds": 8.94,
+  "throughputRps": 2237,
+  "latencyMs": {
+    "count": 20000,
+    "mean": 57.12,
+    "p50": 55.69,
+    "p90": 61.8,
+    "p95": 65.71,
+    "p99": 107.65,
+    "max": 134.98
+  },
+  "statuses": {
+    "202": 18000,
+    "200 duplicate": 2000
+  },
+  "perSecond": [
+    1983,
+    2239,
+    2270,
+    2240,
+    2371,
+    2214,
+    2180,
+    2307,
+    2196
+  ]
+}
