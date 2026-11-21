@@ -13,6 +13,7 @@ const env = z
     /** Optional: without it the Anthropic SDK also reads ANTHROPIC_AUTH_TOKEN or an `ant auth login` profile. */
     ANTHROPIC_API_KEY: z.string().min(1).optional(),
     ANTHROPIC_MODEL: z.string().optional(),
+    ANTHROPIC_EFFORT: z.enum(["low", "medium", "high", "xhigh", "max"]).optional(),
     OPENAI_API_KEY: z.string().min(1).optional(),
     OPENAI_MODEL: z.string().optional(),
     GITHUB_APP_ID: z.string().min(1),

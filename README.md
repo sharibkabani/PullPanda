@@ -1,7 +1,7 @@
 # PullPanda
 
 AI code review as a GitHub App. When a pull request is opened or pushed to, PullPanda reads the diff, asks an
-Claude (Opus 5.5 by default; OpenAI is a configurable alternative) for a structured review, validates every finding against the diff, and posts **one GitHub review
+Claude (Sonnet 5.5 by default; OpenAI is a configurable alternative) for a structured review, validates every finding against the diff, and posts **one GitHub review
 with inline comments and one-click suggested fixes**. Pro is sold per repository through Polar.
 
 ```mermaid

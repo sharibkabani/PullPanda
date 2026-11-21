@@ -28,7 +28,7 @@ test("maps Claude's structured review and sends the configured request", async (
   expect(out.findings[0]).toMatchObject({ path: "src/users.ts", line: 3, severity: "critical" });
   expect(out.findings[0]!.startLine).toBeUndefined();
   expect(out.usage).toEqual({ inputTokens: 1000, outputTokens: 120 });
-  expect(seen[0]).toMatchObject({ model: "claude-opus-5-5", thinking: { type: "adaptive" }, fallbacks: "default" });
+  expect(seen[0]).toMatchObject({ model: "claude-sonnet-5-5", thinking: { type: "adaptive" }, fallbacks: "default" });
   expect(seen[0].output_config.effort).toBe("high");
 });
 

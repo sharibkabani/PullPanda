@@ -10,11 +10,12 @@ export class ReviewRefusedError extends Error {
   }
 }
 
-export const ANTHROPIC_DEFAULT_MODEL = "claude-opus-5-5";
+/** Sonnet: half Opus 5.5's price and strong at everyday code review. ANTHROPIC_MODEL overrides it. */
+export const ANTHROPIC_DEFAULT_MODEL = "claude-sonnet-5-5";
 
 /**
  * Reviews a batch with Claude. Structured outputs constrain the reply to the review schema, so no JSON
- * repair is needed; adaptive thinking at high effort, since a missed bug costs more than tokens; and the
+ * repair is needed; adaptive thinking at high effort (Sonnet's default; ANTHROPIC_EFFORT to tune); and the
  * server-side fallback re-runs a refused request on another model inside the same call.
  */
 export class AnthropicReviewModel implements ReviewModel {

@@ -128,6 +128,7 @@ export function createReviewModel(env: {
   LLM_PROVIDER?: string;
   ANTHROPIC_API_KEY?: string;
   ANTHROPIC_MODEL?: string;
+  ANTHROPIC_EFFORT?: string;
   OPENAI_API_KEY?: string;
   OPENAI_MODEL?: string;
 }): ReviewModel {
@@ -135,5 +136,6 @@ export function createReviewModel(env: {
     if (!env.OPENAI_API_KEY) throw new Error("LLM_PROVIDER=openai needs OPENAI_API_KEY");
     return new OpenAIReviewModel({ apiKey: env.OPENAI_API_KEY, model: env.OPENAI_MODEL });
   }
-  return new AnthropicReviewModel({ apiKey: env.ANTHROPIC_API_KEY, model: env.ANTHROPIC_MODEL });
+  const effort = env.ANTHROPIC_EFFORT as ConstructorParameters<typeof AnthropicReviewModel>[0]["effort"];
+  return new AnthropicReviewModel({ apiKey: env.ANTHROPIC_API_KEY, model: env.ANTHROPIC_MODEL, effort });
 }
