@@ -1,0 +1,8 @@
+node_modules
+**/node_modules
+apps/web/.next
+apps/web/out
+**/.taste-skill
+.env
+.env.*
+.git

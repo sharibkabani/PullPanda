@@ -1,0 +1,10 @@
+# PullPanda's own review rules for this repository.
+minSeverity: suggestion
+maxComments: 15
+ignore:
+  - "bench/results/**"
+  - "docs/**"
+  - "apps/web/content/benchmarks.json"
+instructions: |
+  Bun + Elysia API, BullMQ worker, Drizzle on Postgres. Webhook handlers must stay idempotent and
+  quota checks must hold under concurrency. Flag anything that could post a review twice or bill wrongly.

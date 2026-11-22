@@ -1,38 +1,22 @@
 {
-  "name": "client",
-  "version": "0.1.0",
+  "name": "pullpanda",
   "private": true,
+  "type": "module",
+  "workspaces": ["apps/*", "packages/*", "bench"],
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@google/generative-ai": "^0.21.0",
-    "@radix-ui/react-slot": "^1.1.2",
-    "@tailwindcss/postcss": "^4.0.6",
-    "@upstash/redis": "^1.34.5",
-    "axios": "^1.7.9",
-    "bullmq": "^5.41.5",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.475.0",
-    "next": "15.1.7",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "tailwind-merge": "^3.0.1",
-    "tailwindcss-animate": "^1.0.7"
+    "dev": "bun run --filter './apps/*' dev",
+    "dev:api": "bun run --filter @pullpanda/api dev",
+    "dev:worker": "bun run --filter @pullpanda/worker dev",
+    "dev:web": "bun run --filter @pullpanda/web dev",
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down",
+    "db:generate": "bun run --filter @pullpanda/db generate",
+    "db:migrate": "bun run --filter @pullpanda/db migrate",
+    "test": "bun test",
+    "typecheck": "bun run --filter '*' typecheck"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "15.1.7",
-    "postcss": "^8.5.2",
-    "tailwindcss": "^3.4.17",
-    "typescript": "^5"
+    "@types/bun": "latest",
+    "typescript": "^5.9.3"
   }
 }

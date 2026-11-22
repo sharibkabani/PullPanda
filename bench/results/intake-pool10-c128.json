@@ -1,0 +1,38 @@
+{
+  "label": "pool10-c128",
+  "total": 20000,
+  "concurrency": 128,
+  "installations": 1000,
+  "dupRate": 0.1,
+  "uniqueEvents": 17983,
+  "seconds": 12.88,
+  "throughputRps": 1553,
+  "latencyMs": {
+    "count": 20000,
+    "mean": 82.3,
+    "p50": 81.4,
+    "p90": 87.39,
+    "p95": 92.46,
+    "p99": 102.79,
+    "max": 123.12
+  },
+  "statuses": {
+    "202": 17978,
+    "200 duplicate": 2022
+  },
+  "perSecond": [
+    1536,
+    1659,
+    1540,
+    1564,
+    1634,
+    1573,
+    1527,
+    1591,
+    1531,
+    1470,
+    1493,
+    1508,
+    1374
+  ]
+}

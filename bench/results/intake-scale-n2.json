@@ -1,0 +1,44 @@
+{
+  "label": "scale-n2",
+  "total": 40000,
+  "concurrency": 256,
+  "apiInstances": 2,
+  "installations": 1000,
+  "dupRate": 0.1,
+  "uniqueEvents": 35977,
+  "seconds": 16.1,
+  "throughputRps": 2485,
+  "latencyMs": {
+    "count": 40000,
+    "mean": 102.86,
+    "p50": 100.92,
+    "p90": 136.95,
+    "p95": 147.68,
+    "p99": 192.79,
+    "max": 351.01
+  },
+  "statuses": {
+    "202": 30000,
+    "200 duplicate": 4034,
+    "200 skipped": 5966
+  },
+  "perSecond": [
+    2030,
+    2377,
+    2384,
+    2437,
+    2495,
+    2401,
+    2586,
+    2395,
+    2624,
+    2565,
+    2596,
+    2469,
+    2654,
+    2597,
+    2329,
+    2702,
+    359
+  ]
+}

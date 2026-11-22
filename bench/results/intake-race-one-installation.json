@@ -1,0 +1,27 @@
+{
+  "label": "race-one-installation",
+  "total": 400,
+  "concurrency": 64,
+  "apiInstances": 2,
+  "installations": 1,
+  "dupRate": 0,
+  "uniqueEvents": 400,
+  "seconds": 0.44,
+  "throughputRps": 919,
+  "latencyMs": {
+    "count": 400,
+    "mean": 65.5,
+    "p50": 61.32,
+    "p90": 96.78,
+    "p95": 122.49,
+    "p99": 134.32,
+    "max": 140.15
+  },
+  "statuses": {
+    "202": 38,
+    "200 skipped": 362
+  },
+  "perSecond": [
+    400
+  ]
+}

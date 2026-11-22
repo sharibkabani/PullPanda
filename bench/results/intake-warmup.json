@@ -1,0 +1,27 @@
+{
+  "label": "warmup",
+  "total": 2000,
+  "concurrency": 16,
+  "installations": 1000,
+  "dupRate": 0.1,
+  "uniqueEvents": 1815,
+  "seconds": 1.6,
+  "throughputRps": 1249,
+  "latencyMs": {
+    "count": 2000,
+    "mean": 12.78,
+    "p50": 11.99,
+    "p90": 15.68,
+    "p95": 17.19,
+    "p99": 20.92,
+    "max": 59.97
+  },
+  "statuses": {
+    "202": 1815,
+    "200 duplicate": 185
+  },
+  "perSecond": [
+    1176,
+    824
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "label": "pool10-c32",
+  "total": 20000,
+  "concurrency": 32,
+  "installations": 1000,
+  "dupRate": 0.1,
+  "uniqueEvents": 17980,
+  "seconds": 13.52,
+  "throughputRps": 1479,
+  "latencyMs": {
+    "count": 20000,
+    "mean": 21.62,
+    "p50": 21.11,
+    "p90": 24.01,
+    "p95": 25.56,
+    "p99": 32.34,
+    "max": 69.37
+  },
+  "statuses": {
+    "202": 17975,
+    "200 duplicate": 2025
+  },
+  "perSecond": [
+    1467,
+    1496,
+    1501,
+    1535,
+    1512,
+    1398,
+    1386,
+    1478,
+    1473,
+    1520,
+    1495,
+    1510,
+    1425,
+    804
+  ]
+}

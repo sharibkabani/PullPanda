@@ -1,0 +1,38 @@
+{
+  "label": "opt-c64",
+  "total": 20000,
+  "concurrency": 64,
+  "installations": 1000,
+  "dupRate": 0.1,
+  "uniqueEvents": 17973,
+  "seconds": 12.28,
+  "throughputRps": 1629,
+  "latencyMs": {
+    "count": 20000,
+    "mean": 39.26,
+    "p50": 38.78,
+    "p90": 42.29,
+    "p95": 44.01,
+    "p99": 49.66,
+    "max": 63.12
+  },
+  "statuses": {
+    "202": 17968,
+    "200 duplicate": 2032
+  },
+  "perSecond": [
+    1654,
+    1615,
+    1588,
+    1642,
+    1596,
+    1664,
+    1657,
+    1661,
+    1597,
+    1637,
+    1601,
+    1609,
+    479
+  ]
+}

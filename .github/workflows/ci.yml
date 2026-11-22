@@ -1,0 +1,28 @@
+name: ci
+on:
+  push: { branches: [main] }
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env: { POSTGRES_USER: pullpanda, POSTGRES_PASSWORD: pullpanda, POSTGRES_DB: pullpanda_test }
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U pullpanda" --health-interval 2s --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+    env:
+      TEST_DATABASE_URL: postgres://pullpanda:pullpanda@localhost:5432/pullpanda_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.2 }
+      - run: bun install --frozen-lockfile
+      - run: DATABASE_URL=$TEST_DATABASE_URL bun packages/db/src/migrate.ts
+      - run: bun run typecheck
+      - run: bun test
+      - run: bun run --filter @pullpanda/web build
