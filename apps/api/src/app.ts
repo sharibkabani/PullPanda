@@ -29,7 +29,7 @@ export function createApp(deps: ApiDeps) {
 
   return new Elysia()
     .use(cors({ origin: env.WEB_URL, credentials: true }))
-    .use(openapi({ path: "/docs", documentation: { info: { title: "PullPanda API", version: "0.1.0" } } }))
+    .use(openapi({ path: "/docs", documentation: { info: { title: "DiffPanda API", version: "0.1.0" } } }))
     .use(jwt({ name: "session", secret: env.SESSION_SECRET, exp: "30d" }))
     .onError(({ code, error, set }) => {
       if (code === "NOT_FOUND") return { error: "not found" };

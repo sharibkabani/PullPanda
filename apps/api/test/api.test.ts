@@ -142,7 +142,7 @@ describe("GitHub webhook", () => {
 
   test("private repos on the free plan are recorded as skipped, not queued", async () => {
     const res = await makeApp().handle(ghRequest("pull_request", prPayload({ repoId: 101, isPrivate: true })));
-    expect(await res.json() as any).toEqual({ skipped: "Private repositories need PullPanda Pro." });
+    expect(await res.json() as any).toEqual({ skipped: "Private repositories need DiffPanda Pro." });
     expect(queued).toHaveLength(0);
     const [row] = await db.select().from(reviews);
     expect(row!.status).toBe("skipped");

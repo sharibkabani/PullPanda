@@ -1,4 +1,4 @@
-/* PullPanda landing: page CSS only where the kit has no rule (inside visuals, one --p-h per card group). */
+/* DiffPanda landing: page CSS only where the kit has no rule (inside visuals, one --p-h per card group). */
 
 /* ---------- hero collage pieces (sized in % of the collage, text in container units) ---------- */
 .ly-collage { container-type: inline-size; }

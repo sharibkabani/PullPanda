@@ -13,7 +13,7 @@ const PALETTE = `:root {
 }`;
 
 export const metadata: Metadata = {
-  title: "Dashboard: PullPanda",
+  title: "Dashboard: DiffPanda",
   description: "Your repositories, review history and billing.",
   icons: { icon: { url: "/favicon.svg", type: "image/svg+xml" } },
 };

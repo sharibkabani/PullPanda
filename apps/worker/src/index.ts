@@ -22,7 +22,7 @@ const env = z
     /** Reviews started per minute across every replica: set it from your OpenAI rate limit. */
     WORKER_RATE_PER_MIN: z.coerce.number().int().min(1).default(30),
   })
-  .parse(process.env);
+  .parse(Object.fromEntries(Object.entries(process.env).filter(([, v]) => v !== ""))); // blank `KEY=` means unset
 
 const privateKey = env.GITHUB_APP_PRIVATE_KEY.includes("BEGIN")
   ? env.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, "\n")

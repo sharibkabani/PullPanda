@@ -87,7 +87,7 @@ export default function Dashboard() {
     <div className="dash">
       <header className="dash__bar">
         <div className="wrap">
-          <a className="nav__logo" href="/"><span className="mark" data-mark="stack" aria-hidden="true" />PullPanda</a>
+          <a className="nav__logo" href="/"><span className="mark" data-mark="stack" aria-hidden="true" />DiffPanda</a>
           <span className="spacer" />
           {state.kind === "ready" && (
             <>
@@ -106,7 +106,7 @@ export default function Dashboard() {
 
         {state.kind === "error" && (
           <div className="empty">
-            <h1>Can't reach the PullPanda API</h1>
+            <h1>Can't reach the DiffPanda API</h1>
             <p className="muted">{state.message}. Check that the API is running and that NEXT_PUBLIC_API_URL points at it.</p>
             <button className="btn btn--secondary" type="button" onClick={() => void load()}>Try again</button>
           </div>
@@ -114,7 +114,7 @@ export default function Dashboard() {
 
         {state.kind === "signed-out" && (
           <div className="empty">
-            <h1>Sign in to PullPanda</h1>
+            <h1>Sign in to DiffPanda</h1>
             <p className="muted">Sign in with GitHub to see your repositories, review history and billing.</p>
             {state.config ? (
               <a className="btn btn--primary" href={state.config.loginUrl}>Sign in with GitHub</a>
@@ -156,7 +156,7 @@ function Ready(props: {
       {me.installations.length === 0 ? (
         <div className="empty">
           <h2>Install the GitHub App</h2>
-          <p className="muted">PullPanda only sees the repositories you pick during the install.</p>
+          <p className="muted">DiffPanda only sees the repositories you pick during the install.</p>
           {config?.installUrl ? (
             <a className="btn btn--primary" href={config.installUrl}>Install on GitHub</a>
           ) : (

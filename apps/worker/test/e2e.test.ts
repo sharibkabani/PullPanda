@@ -108,7 +108,7 @@ test("a signed webhook results in an inline review on the PR and a completed row
 
   expect(github.reviews).toHaveLength(1);
   expect(github.reviews[0]!.comments[0]).toMatchObject({ path: "src/users.ts", line: 3 });
-  expect(github.reviews[0]!.body).toContain("PullPanda review");
+  expect(github.reviews[0]!.body).toContain("DiffPanda review");
 });
 
 test("a stale commit is skipped by the worker without calling the model", async () => {

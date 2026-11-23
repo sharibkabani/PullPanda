@@ -1,5 +1,5 @@
 /**
- * Runs the PullPanda review pipeline once against a real pull request, outside the queue.
+ * Runs the DiffPanda review pipeline once against a real pull request, outside the queue.
  * Uses a GitHub token (GITHUB_TOKEN, e.g. `gh auth token`) instead of the GitHub App, so the review is
  * posted as that user.
  *
@@ -38,7 +38,7 @@ const dryRun = process.argv.includes("--dry-run");
 const token = process.env.GITHUB_TOKEN;
 if (!token) throw new Error("set GITHUB_TOKEN (for example: GITHUB_TOKEN=$(gh auth token))");
 
-const octokit = new Octokit({ auth: token, userAgent: "PullPanda", log: quietLog });
+const octokit = new Octokit({ auth: token, userAgent: "DiffPanda", log: quietLog });
 const real = new OctokitGitHubClient(octokit);
 const prNumber = Number(num);
 const pr = await real.getPullRequest(owner, repo, prNumber);

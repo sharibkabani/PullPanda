@@ -2,12 +2,12 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "PullPanda: AI code review for GitHub pull requests",
+  title: "DiffPanda: AI code review for GitHub pull requests",
   description:
     "A GitHub App that reviews every push to a pull request and posts line comments with fixes you commit in one click. Free for public repositories.",
   openGraph: {
     type: "website",
-    title: "PullPanda: AI code review for GitHub pull requests",
+    title: "DiffPanda: AI code review for GitHub pull requests",
     description: "Line comments and one-click fixes on every push. Free for public repositories.",
     images: ["/share.jpg"],
   },

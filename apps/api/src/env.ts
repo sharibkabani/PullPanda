@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-const optional = z.string().min(1).optional();
+/** A blank line copied from .env.example (`KEY=`) means "not set", not an invalid empty value. */
+const blankIsUnset = (v: unknown) => (v === "" ? undefined : v);
+const optional = z.preprocess(blankIsUnset, z.string().min(1).optional());
 
 const schema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
@@ -30,7 +32,7 @@ const schema = z.object({
 export type Env = z.infer<typeof schema>;
 
 export function loadEnv(source: Record<string, string | undefined> = process.env): Env {
-  const env = schema.parse(source);
+  const env = schema.parse(Object.fromEntries(Object.entries(source).filter(([, v]) => v !== "")));
   if (env.NODE_ENV === "production" && env.SESSION_SECRET.startsWith("dev-only")) {
     throw new Error("SESSION_SECRET must be set in production");
   }
