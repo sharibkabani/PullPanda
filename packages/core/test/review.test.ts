@@ -42,7 +42,7 @@ describe("reviewPullRequest", () => {
       [{ draft: true }, {}, "draft pull request"],
       [{ state: "closed" }, {}, "pull request is closed"],
       [{ headSha: "newer" }, {}, "superseded by a newer commit"],
-      [{}, { ".pullpanda.yml": "enabled: false" }, "disabled in .pullpanda.yml"],
+      [{}, { ".diffpanda.yml": "enabled: false" }, "disabled in .diffpanda.yml"],
     ];
     for (const [over, repoFiles, reason] of cases) {
       const out = await reviewPullRequest(ref, { github: new FakeGitHub({ ...pr, ...over }, files, repoFiles), model });
@@ -63,7 +63,7 @@ describe("reviewPullRequest", () => {
   });
 
   test("repo instructions reach the prompt", async () => {
-    const gh = new FakeGitHub(pr, files, { ".pullpanda.yml": "instructions: Always use zod for input validation" });
+    const gh = new FakeGitHub(pr, files, { ".diffpanda.yml": "instructions: Always use zod for input validation" });
     const model = new FakeModel(() => []);
     await reviewPullRequest(ref, { github: gh, model });
     expect(renderBatchPrompt(model.calls[0]!)).toContain("Always use zod");

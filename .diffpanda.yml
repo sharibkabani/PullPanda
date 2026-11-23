@@ -1,4 +1,4 @@
-# PullPanda's own review rules for this repository.
+# DiffPanda's own review rules for this repository.
 minSeverity: suggestion
 maxComments: 15
 ignore:

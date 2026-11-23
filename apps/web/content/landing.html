@@ -10,7 +10,7 @@
 <header class="nav nav--centre">
   <div class="wrap nav__bar">
     <a class="skip-link" href="#top">Skip to content</a>
-    <a class="nav__logo" href="#top"><span class="mark" data-mark="stack" aria-hidden="true"></span>PullPanda</a>
+    <a class="nav__logo" href="#top"><span class="mark" data-mark="stack" aria-hidden="true"></span>DiffPanda</a>
     <nav class="nav__links" aria-label="Main">
       <div class="nav__item"><a class="nav__link" href="#review">Review</a></div>
       <div class="nav__item"><a class="nav__link" href="#features">Features</a></div>
@@ -34,9 +34,9 @@
     <div class="wrap"><div class="hero-text grid hero__grid">
       <div class="span-3">
         <h1 id="hero-h">AI code review for pull requests</h1>
-        <p class="hero__lead">PullPanda comments on the changed lines of each GitHub pull request, with fixes you commit in one click. 30 free reviews a month.</p>
+        <p class="hero__lead">DiffPanda comments on the changed lines of each GitHub pull request, with fixes you commit in one click. 30 free reviews a month.</p>
       </div>
-      <div class="ly-collage span-6 start-4" role="img" aria-label="A diff with a PullPanda comment and its suggested fix, the review summary with a .pullpanda.yml file, and the review run for one push">
+      <div class="ly-collage span-6 start-4" role="img" aria-label="A diff with a DiffPanda comment and its suggested fix, the review summary with a .diffpanda.yml file, and the review run for one push">
         <div class="ly-collage__set is-on">
           <div class="ly-piece pc-diff" style="left: 4%; top: 5%; width: 60%">
             <div class="pc-file"><img width="24" height="24" data-icon="typescript" src="assets/icons/typescript.svg" alt=""><span>src/users/repository.ts</span><em>+2 −1</em></div>
@@ -47,7 +47,7 @@
             <div class="pc-ln"><i>15</i><code>}</code></div>
           </div>
           <div class="ly-piece pc-comment" style="left: 36%; top: 58%; width: 60%; height: 38%">
-            <div class="pc-by"><span class="pc-av">PP</span><b>pullpanda</b><span class="pc-sev">critical · security</span></div>
+            <div class="pc-by"><span class="pc-av">DP</span><b>diffpanda</b><span class="pc-sev">critical · security</span></div>
             <p>The id goes straight into the SQL string. Pass it as a parameter.</p>
             <div class="pc-sug"><span>Suggested change</span><code>return db.where({ id });</code></div>
             <span class="pc-btn">Commit suggestion</span>
@@ -58,13 +58,13 @@
         </div>
         <div class="ly-collage__set" aria-hidden="true">
           <div class="ly-piece pc-summary" style="left: 4%; top: 5%; width: 58%">
-            <b class="pc-h">PullPanda review</b>
+            <b class="pc-h">DiffPanda review</b>
             <p>Adds a user lookup and a retry for webhook deliveries. The lookup builds SQL from request input.</p>
             <div class="pc-tally"><span><i class="t-crit"></i>1 critical</span><span><i class="t-warn"></i>2 warning</span></div>
             <small>7 files reviewed · package-lock.json skipped</small>
           </div>
           <div class="ly-piece pc-yaml" style="left: 40%; top: 50%; width: 56%; height: 46%">
-            <span class="pc-tab">.pullpanda.yml</span>
+            <span class="pc-tab">.diffpanda.yml</span>
 <pre><code><b>minSeverity</b>: warning
 <b>maxComments</b>: 10
 <b>ignore</b>:
@@ -101,11 +101,11 @@
       <div class="grid">
         <h2 id="review-h" class="span-5">Every pull request, reviewed where you read it</h2>
         <div class="span-6 start-7 stack-4">
-          <p>A push reaches PullPanda as a webhook. The diff is read, comments land on the lines that changed, and the fix sits under each one as a GitHub suggestion.</p>
+          <p>A push reaches DiffPanda as a webhook. The diff is read, comments land on the lines that changed, and the fix sits under each one as a GitHub suggestion.</p>
           <a class="link" href="#config">See the review rules</a>
         </div>
       </div>
-      <div class="ui app fill" role="img" aria-label="A list of open pull requests with their review state, beside one diff where PullPanda flags a SQL query built from input and offers the fix" data-ui-pause-host>
+      <div class="ui app fill" role="img" aria-label="A list of open pull requests with their review state, beside one diff where DiffPanda flags a SQL query built from input and offers the fix" data-ui-pause-host>
         <div class="app__pane app__pane--list">
           <div class="ui ui-panel ui-win" data-ui="window" data-open="Queued" data-work="Reviewing" data-done="Reviewed">
             <div class="ui-win__bar">
@@ -163,8 +163,8 @@
               <div class="ui-diff__sug" data-diff-sug><div class="ui-diff__ln is-add"><i></i><i>14</i><span class="ui-diff__code" data-i="2"><span class="ui-diff__ind">    </span><span class="k">return</span> <span class="k">this</span>.db.<span class="f">query</span>(<mark class="ui-diff__w"><span class="s">"SELECT * FROM users WHERE id = $1"</span>, id</mark>);</span></div></div>
               <div class="ui-diff__thread">
                 <div class="ui-diff__by">
-                  <span class="ui-avatar" data-tone="4">PP</span>
-                  <span class="ui-diff__name">pullpanda</span>
+                  <span class="ui-avatar" data-tone="4">DP</span>
+                  <span class="ui-diff__name">diffpanda</span>
                   <span class="ui-diff__time">now</span>
                   <span class="ui-spacer"></span>
                   <span class="ui-diff__act" data-diff-act>
@@ -198,7 +198,7 @@
     <div class="wrap">
       <div class="grid fill">
         <div class="span-6 stack-6" data-moment="liquid-type">
-          <h2 id="statement-h" class="mo-lt__type">PullPanda comments on changed lines</h2>
+          <h2 id="statement-h" class="mo-lt__type">DiffPanda comments on changed lines</h2>
           <p class="t-lead">One GitHub review per push, each finding pinned to its line with the reason and the fix. The summary on top counts what it found.</p>
         </div>
         <div class="frame frame--split span-6 start-7" data-fx="painterly-landscape" data-fx-seed="66" data-fx-params='{"speed":0,"drift":0}'>
@@ -206,7 +206,7 @@
             <div class="ui ui-doc" data-ui="doc">
               <article class="ui-doc__page">
                 <div class="ui-doc__label">Review on #212, commit a41c9e0</div>
-                <div class="ui-doc__title">PullPanda review</div>
+                <div class="ui-doc__title">DiffPanda review</div>
                 <div class="ui-doc__text">Adds a user lookup and retries webhook deliveries. The lookup <mark class="ui-doc__mark is-on">builds SQL from request input</mark>.</div>
                 <div class="ui-doc__text">The retry loop <mark class="ui-doc__mark" data-kind="Warning" data-msg="The loop retries a 404 forever." data-where="src/webhooks/retry.ts, line 31">never stops on a 404</mark> from GitHub.</div>
                 <div class="ui-doc__text">7 files reviewed: 1 critical, 2 warnings.</div>
@@ -228,7 +228,7 @@
     <div class="wrap">
       <div class="group">
         <div class="section-head">
-          <h2 id="features-h">What PullPanda does on each push. <span class="muted">Reviews, rules, batching and checks.</span></h2>
+          <h2 id="features-h">What DiffPanda does on each push. <span class="muted">Reviews, rules, batching and checks.</span></h2>
         </div>
         <div class="grid">
           <article class="card card--row span-6 m-nolift">
@@ -309,7 +309,7 @@
   <section class="section" id="benchmarks" aria-labelledby="benchmarks-h">
     <div class="wrap">
       <div class="grid">
-        <h2 id="benchmarks-h" class="span-5">PullPanda under load</h2>
+        <h2 id="benchmarks-h" class="span-5">DiffPanda under load</h2>
         <div class="span-6 start-7 stack-4">
           <p>{{B_EVENTS}} signed pull request events hit two API instances in {{B_INTAKE_S}} seconds, answered at {{B_INTAKE_P99}} ms p99. One worker cleared the queue in {{B_DRAIN_S}} seconds. GitHub and the model were stand-ins that wait as long as the real ones.</p>
           <a class="link" href="benchmarks/">See every run and how it was measured</a>
@@ -332,8 +332,8 @@
     <div class="wrap">
       <div class="grid fill">
         <div class="span-5 stack-6">
-          <h2 id="config-h">Set the rules in .pullpanda.yml</h2>
-          <p class="t-lead">Commit the file and PullPanda reads it from each pull request's head commit. Set the lowest severity to post, the paths to skip and your team's guidelines in plain English.</p>
+          <h2 id="config-h">Set the rules in .diffpanda.yml</h2>
+          <p class="t-lead">Commit the file and DiffPanda reads it from each pull request's head commit. Set the lowest severity to post, the paths to skip and your team's guidelines in plain English.</p>
           <ul class="facts">
             <li>Up to 50 comments a review</li>
             <li>Drafts wait until marked ready</li>
@@ -345,7 +345,7 @@
           <div class="stage stage--fade-br"><div class="at-rise to-edge" style="--w:420px;--ay:56px">
             <div class="ui ui-panel ui-code" data-ui="code">
               <div class="ui-code__tabs">
-                <span class="ui-code__tab is-on"><i class="ui-code__lang">YML</i>.pullpanda.yml</span>
+                <span class="ui-code__tab is-on"><i class="ui-code__lang">YML</i>.diffpanda.yml</span>
                 <span class="ui-spacer"></span>
                 <span class="ui-chip ui-chip--plain ui-code__chip" data-code-chip>valid</span>
               </div>
@@ -385,7 +385,7 @@
             <li>Public repositories</li>
             <li>30 reviews a month per account</li>
             <li>Every severity level</li>
-            <li>Rules in .pullpanda.yml</li>
+            <li>Rules in .diffpanda.yml</li>
             <li>Review history in the dashboard</li>
           </ul>
         </article>
@@ -413,17 +413,17 @@
         <div class="span-5 stack-4">
           <h2 id="faq-h">Questions</h2>
           <p>What teams ask before they install.</p>
-          <a class="link" href="mailto:hello@pullpanda.example">Email us</a>
+          <a class="link" href="mailto:hello@diffpanda.example">Email us</a>
           <div class="faq__tools" aria-label="Runs on GitHub and Claude">
             <span class="ic-tile ic-tile--56"><img loading="lazy" width="24" height="24" class="ic" data-icon="github" src="assets/icons/github.svg" alt="GitHub"></span>
             <span class="ic-tile ic-tile--56"><img loading="lazy" width="24" height="24" class="ic" data-icon="claude" src="assets/icons/claude.svg" alt="Claude"></span>
           </div>
         </div>
         <div class="faq span-6 start-7">
-          <div class="faq__item"><h3>Does PullPanda keep my code?</h3><p>No. The worker fetches the diff from GitHub for the review and stores only the findings and token counts.</p></div>
-          <div class="faq__item"><h3>Does PullPanda read the whole repository?</h3><p>No. It reads the changed lines and the lines around them, so it can miss a problem that only shows across files.</p></div>
+          <div class="faq__item"><h3>Does DiffPanda keep my code?</h3><p>No. The worker fetches the diff from GitHub for the review and stores only the findings and token counts.</p></div>
+          <div class="faq__item"><h3>Does DiffPanda read the whole repository?</h3><p>No. It reads the changed lines and the lines around them, so it can miss a problem that only shows across files.</p></div>
           <div class="faq__item"><h3>What starts a review?</h3><p>Opening, reopening or marking a pull request ready, and every push to it.</p></div>
-          <div class="faq__item"><h3>Can I turn reviews off for one repository?</h3><p>Yes. Switch it off in the dashboard, or commit <code>enabled: false</code> in .pullpanda.yml.</p></div>
+          <div class="faq__item"><h3>Can I turn reviews off for one repository?</h3><p>Yes. Switch it off in the dashboard, or commit <code>enabled: false</code> in .diffpanda.yml.</p></div>
           <div class="faq__item"><h3>Which model writes the reviews?</h3><p>Claude Sonnet 5.5 by default. Its answer is checked against the diff, and comments on lines outside it are dropped.</p></div>
           <div class="faq__item"><h3>How do I cancel a Pro subscription?</h3><p>Cancel in the billing portal. Pro stays on for that repository until the paid month ends.</p></div>
         </div>
@@ -439,21 +439,21 @@
         <div><h2 id="close-h">Review your next pull request</h2><p class="t-lead">Pick the repositories during the GitHub install.</p></div>
         <a class="btn btn--primary" href="{{INSTALL_URL}}">Install on GitHub<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a>
       </div>
-      <p class="close__word" aria-hidden="true">PullPanda</p>
+      <p class="close__word" aria-hidden="true">DiffPanda</p>
     </div>
     <div class="closing__links">
       <div class="grid">
         <div class="span-4 stack-4">
-          <a class="nav__logo" href="#top"><span class="mark" data-mark="stack" aria-hidden="true"></span>PullPanda</a>
+          <a class="nav__logo" href="#top"><span class="mark" data-mark="stack" aria-hidden="true"></span>DiffPanda</a>
           <p class="footer__lede">AI code review for GitHub pull requests.</p>
         </div>
         <div class="span-2 footer__col"><h3>Product</h3><ul><li><a href="#review">Review</a></li><li><a href="#features">Features</a></li><li><a href="#config">Rules</a></li><li><a href="#benchmarks">Benchmarks</a></li></ul></div>
         <div class="span-2 footer__col"><h3>Plans</h3><ul><li><a href="#pricing">Pricing</a></li><li><a href="#faq">Questions</a></li></ul></div>
         <div class="span-2 footer__col"><h3>Account</h3><ul><li><a href="{{DASHBOARD_URL}}">Dashboard</a></li></ul></div>
-        <div class="span-2 footer__col"><h3>Contact</h3><ul><li><a href="mailto:hello@pullpanda.example">Email us</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Contact</h3><ul><li><a href="mailto:hello@diffpanda.example">Email us</a></li></ul></div>
       </div>
       <div class="footer__legal">
-        <span>&copy; 2026 PullPanda &nbsp; <a href="privacy/">Privacy</a> &nbsp; <a href="terms/">Terms</a></span>
+        <span>&copy; 2026 DiffPanda &nbsp; <a href="privacy/">Privacy</a> &nbsp; <a href="terms/">Terms</a></span>
         <div class="socials"></div>
         <span>Product names and logos are trademarks of their owners</span>
       </div>

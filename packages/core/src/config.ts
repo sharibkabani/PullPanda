@@ -5,7 +5,7 @@ export const SEVERITIES = ["critical", "warning", "suggestion", "nit"] as const;
 export type Severity = (typeof SEVERITIES)[number];
 export const severityRank: Record<Severity, number> = { critical: 0, warning: 1, suggestion: 2, nit: 3 };
 
-/** Per-repo settings read from `.pullpanda.yml` at the PR's head commit. */
+/** Per-repo settings read from `.diffpanda.yml` at the PR's head commit. */
 export const repoConfigSchema = z.object({
   enabled: z.boolean().default(true),
   ignore: z.array(z.string()).default([]),
@@ -17,7 +17,9 @@ export const repoConfigSchema = z.object({
 export type RepoConfig = z.infer<typeof repoConfigSchema>;
 
 export const DEFAULT_CONFIG: RepoConfig = repoConfigSchema.parse({});
-export const CONFIG_PATH = ".pullpanda.yml";
+export const CONFIG_PATH = ".diffpanda.yml";
+/** Read when CONFIG_PATH is missing: repositories set up before the rename. */
+export const LEGACY_CONFIG_PATH = ".pullpanda.yml";
 
 /** Files that are never worth an LLM's attention. */
 export const DEFAULT_IGNORES = [

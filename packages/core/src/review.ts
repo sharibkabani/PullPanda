@@ -1,6 +1,7 @@
 import { chunkFiles, DEFAULT_CHUNK_OPTIONS, prepareFile, type ChunkOptions, type PreparedFile } from "./chunk";
 import {
   CONFIG_PATH,
+  LEGACY_CONFIG_PATH,
   DEFAULT_IGNORES,
   isIgnored,
   parseRepoConfig,
@@ -112,7 +113,7 @@ export function renderSummary(opts: {
     .map((s) => `${SEVERITY_ICON[s]} ${counts[s]} ${s}`)
     .join(" · ");
 
-  const lines = ["## 🐼 PullPanda review", "", ...opts.summaries.map((s) => s.trim()).filter(Boolean)];
+  const lines = ["## 🐼 DiffPanda review", "", ...opts.summaries.map((s) => s.trim()).filter(Boolean)];
   lines.push("", `**${opts.filesReviewed} file${opts.filesReviewed === 1 ? "" : "s"} reviewed** — ${tally || "no issues found ✅"}`);
   if (opts.skippedFiles.length) {
     lines.push("", `<details><summary>${opts.skippedFiles.length} file(s) skipped (review budget)</summary>\n\n${opts.skippedFiles.map((p) => `- \`${p}\``).join("\n")}\n</details>`);
@@ -121,7 +122,7 @@ export function renderSummary(opts: {
     lines.push("", `<details><summary>${opts.failedFiles.length} file(s) not reviewed (the model call failed)</summary>\n\n${opts.failedFiles.map((p) => `- \`${p}\``).join("\n")}\n</details>`);
   }
   if (opts.configError) lines.push("", `> ⚠️ ${opts.configError}. Using defaults.`);
-  lines.push("", `<sub>Configure with \`${CONFIG_PATH}\` · Powered by PullPanda</sub>`);
+  lines.push("", `<sub>Configure with \`${CONFIG_PATH}\` · Powered by DiffPanda</sub>`);
   return lines.join("\n");
 }
 
@@ -152,9 +153,10 @@ export async function reviewPullRequest(ref: PullRequestRef, deps: ReviewDeps): 
   // A newer push will enqueue its own job; don't review a stale commit.
   if (pr.headSha !== ref.headSha) return { status: "skipped", reason: "superseded by a newer commit" };
 
-  const { config, error: configError } = parseRepoConfig(
-    await github.getFileText(ref.owner, ref.repo, CONFIG_PATH, ref.headSha),
-  );
+  const configText =
+    (await github.getFileText(ref.owner, ref.repo, CONFIG_PATH, ref.headSha)) ??
+    (await github.getFileText(ref.owner, ref.repo, LEGACY_CONFIG_PATH, ref.headSha));
+  const { config, error: configError } = parseRepoConfig(configText);
   if (!config.enabled) return { status: "skipped", reason: `disabled in ${CONFIG_PATH}` };
 
   // A retry after a crash between posting and recording must not post (or pay for) the review again.

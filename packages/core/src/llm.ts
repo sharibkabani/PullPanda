@@ -44,7 +44,7 @@ export const reviewResponseSchema = z.object({
   findings: z.array(findingSchema),
 });
 
-export const SYSTEM_PROMPT = `You are PullPanda, a senior software engineer reviewing a GitHub pull request.
+export const SYSTEM_PROMPT = `You are DiffPanda, a senior software engineer reviewing a GitHub pull request.
 
 You receive unified diffs annotated with new-file line numbers in the left gutter:
   "  42 + code" is an added line 42, "  43   code" is unchanged context line 43, "      - code" is a removed line (no number; cannot be commented on).

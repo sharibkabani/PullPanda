@@ -1,6 +1,6 @@
-# PullPanda
+# DiffPanda
 
-AI code review as a GitHub App. When a pull request is opened or pushed to, PullPanda reads the diff, asks an
+AI code review as a GitHub App. When a pull request is opened or pushed to, DiffPanda reads the diff, asks an
 Claude (Sonnet 5.5 by default; OpenAI is a configurable alternative) for a structured review, validates every finding against the diff, and posts **one GitHub review
 with inline comments and one-click suggested fixes**. Pro is sold per repository through Polar.
 
@@ -13,14 +13,14 @@ flowchart LR
   R -- "jobId = repo·pr·sha" --> Q[[BullMQ on Redis]]
   Q --> W
   subgraph W["apps/worker · Bun"]
-    F[fetch PR + .pullpanda.yml] --> P[parse hunks<br/>filter + batch by token budget] --> L[Claude structured output<br/>zod schema] --> X[validate lines<br/>dedupe · cap · rank]
+    F[fetch PR + .diffpanda.yml] --> P[parse hunks<br/>filter + batch by token budget] --> L[Claude structured output<br/>zod schema] --> X[validate lines<br/>dedupe · cap · rank]
   end
   X -- "pulls.createReview" --> GH
   Polar -- "subscription.* webhook" --> API
   Web["apps/web · Next.js static export"] -- "cookie session" --> API
 ```
 
-![PullPanda landing page](docs/hero.jpg)
+![DiffPanda landing page](docs/hero.jpg)
 
 ## Load test results
 
@@ -89,7 +89,7 @@ bun bench/report.ts                                            # refresh the sit
 - **Large PRs are budgeted.** Lockfiles, build output and binaries are ignored. Diffs are annotated with
   new-file line numbers, truncated per file, then packed into token-bounded batches that are reviewed
   concurrently. Files past the plan's budget are listed as skipped in the summary.
-- **Per-repo config.** `.pullpanda.yml` is read at the PR's head commit and validated with zod. Invalid config
+- **Per-repo config.** `.diffpanda.yml` is read at the PR's head commit and validated with zod. Invalid config
   falls back to defaults and is reported in the review.
 - **Billing is per repository.** The Polar checkout metadata carries the repository id onto the subscription.
   Webhooks are verified with Standard Webhooks and applied once (`processed_events`). Canceled subscriptions

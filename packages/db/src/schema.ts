@@ -58,7 +58,7 @@ export const userInstallations = pgTable(
   (t) => [uniqueIndex("user_installation_uq").on(t.userId, t.installationId)],
 );
 
-/** Repositories PullPanda can see, with per-repo billing (Pro is sold per repo). */
+/** Repositories DiffPanda can see, with per-repo billing (Pro is sold per repo). */
 export const repositories = pgTable(
   "repositories",
   {

@@ -15,7 +15,7 @@ async function gh<T>(token: string, path: string): Promise<T> {
       Accept: "application/vnd.github+json",
       Authorization: `Bearer ${token}`,
       "X-GitHub-Api-Version": "2022-11-28",
-      "User-Agent": "PullPanda",
+      "User-Agent": "DiffPanda",
     },
   });
   if (!res.ok) throw new Error(`GitHub ${path} failed: ${res.status}`);

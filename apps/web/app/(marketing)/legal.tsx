@@ -4,7 +4,7 @@
  */
 export function LegalPage({ title, html }: { title: string; html: string }) {
   const header = `<div class="wrap nav__bar">
-    <a class="nav__logo" href="/"><span class="mark" data-mark="stack" aria-hidden="true"></span>PullPanda</a>
+    <a class="nav__logo" href="/"><span class="mark" data-mark="stack" aria-hidden="true"></span>DiffPanda</a>
     <div class="nav__actions"><a class="btn btn--secondary" href="/">Back to the home page</a></div>
   </div>`;
   const main = `<section class="section legal"><div class="wrap stack-6 measure"><h1>${title}</h1>${html}</div></section>`;

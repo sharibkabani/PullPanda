@@ -2,8 +2,8 @@ import { fmt, loadBenchmarks, queueChart, workerChart } from "@/lib/bench";
 import { LegalPage } from "../legal";
 
 export const metadata = {
-  title: "Benchmarks: PullPanda load test results",
-  description: "Webhook intake, queue drain and end-to-end latency for PullPanda, measured with the scripts in bench/.",
+  title: "Benchmarks: DiffPanda load test results",
+  description: "Webhook intake, queue drain and end-to-end latency for DiffPanda, measured with the scripts in bench/.",
 };
 
 const ms = (n: number) => `${fmt(n, n < 10 ? 1 : 0)} ms`;

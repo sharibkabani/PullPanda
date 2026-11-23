@@ -25,7 +25,7 @@ export function checkEntitlement(input: {
   const plan = effectivePlan(input.repo, input.now);
   const limits = PLANS[plan];
   if (input.repo.private && !limits.privateRepos) {
-    return { allowed: false, plan, reason: "Private repositories need PullPanda Pro." };
+    return { allowed: false, plan, reason: "Private repositories need DiffPanda Pro." };
   }
   if (input.reviewsThisMonth >= limits.reviewsPerMonth) {
     return { allowed: false, plan, reason: `Monthly limit of ${limits.reviewsPerMonth} reviews reached.` };

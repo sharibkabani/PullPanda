@@ -15,7 +15,7 @@ const db = createDb(env.DATABASE_URL);
 
 const [user] = await db
   .insert(users)
-  .values({ githubId: 1000001, login: "demo-dev", name: "Demo Developer", email: "demo@pullpanda.example", avatarUrl: null })
+  .values({ githubId: 1000001, login: "demo-dev", name: "Demo Developer", email: "demo@diffpanda.example", avatarUrl: null })
   .onConflictDoUpdate({ target: users.githubId, set: { login: "demo-dev" } })
   .returning();
 
@@ -35,7 +35,7 @@ const rows = [
   { repo: 8000001, pr: 212, status: "completed", comments: 3, files: 7, ms: 38_200, ago: 5 },
   { repo: 8000002, pr: 211, status: "completed", comments: 1, files: 2, ms: 21_900, ago: 40 },
   { repo: 8000001, pr: 210, status: "failed", comments: 0, files: 0, ms: 1_200, ago: 90, error: "GitHub 403: Resource not accessible by integration" },
-  { repo: 8000003, pr: 44, status: "skipped", comments: 0, files: 0, ms: null, ago: 120, skip: "Private repositories need PullPanda Pro." },
+  { repo: 8000003, pr: 44, status: "skipped", comments: 0, files: 0, ms: null, ago: 120, skip: "Private repositories need DiffPanda Pro." },
   { repo: 8000001, pr: 209, status: "completed", comments: 0, files: 1, ms: 12_400, ago: 300 },
   { repo: 8000002, pr: 206, status: "completed", comments: 5, files: 11, ms: 61_000, ago: 900 },
   { repo: 8000001, pr: 208, status: "skipped", comments: 0, files: 0, ms: 300, ago: 1400, skip: "draft pull request" },
